@@ -35,7 +35,7 @@ namespace GakkoServices.APIGateway
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
-                    options.Authority = "http://localhost:35464";
+                    options.Authority = "http://localhost:5001";
                     options.RequireHttpsMetadata = false;
                     options.Audience = "api1";
                 });

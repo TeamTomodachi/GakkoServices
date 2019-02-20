@@ -14,7 +14,7 @@ namespace GakkoServices.AuthServer.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new string[] { "Auth Server", "api1" };
         }
 
         // GET api/values/5

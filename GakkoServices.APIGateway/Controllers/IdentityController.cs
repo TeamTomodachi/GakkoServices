@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GakkoServices.APIGateway.Controllers
 {
-    [Route("identity")]
+    [Route("api/[controller]")]
     [Authorize]
     [ApiController]
     public class IdentityController : ControllerBase

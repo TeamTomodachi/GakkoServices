@@ -50,25 +50,27 @@ namespace GakkoServices.AuthServer
                     options.ClientId = "<insert here>";
                     options.ClientSecret = "<inser here>";
                 })
-                .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+                //// Not sure if should be in AuthServer...
+                //.AddOpenIdConnect("oidc", "IdentityServer", options =>
+                //{
+                //    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                //    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
-                    options.Authority = "https://demo.identityserver.io/";
-                    options.ClientId = "implicit";
-                    options.ResponseType = "id_token";
-                    options.SaveTokens = true;
-                    options.CallbackPath = new PathString("/signin-idsrv");
-                    options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
-                    options.RemoteSignOutPath = new PathString("/signout-idsrv");
+                //    options.Authority = "http://localhost:5001";
+                //    options.ClientId = "implicit";
+                //    options.ResponseType = "id_token";
+                //    options.SaveTokens = true;
+                //    options.CallbackPath = new PathString("/signin-idsrv");
+                //    options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
+                //    options.RemoteSignOutPath = new PathString("/signout-idsrv");
 
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
-                });
+                //    options.TokenValidationParameters = new TokenValidationParameters
+                //    {
+                //        NameClaimType = "name",
+                //        RoleClaimType = "role"
+                //    };
+                //})
+            ;
 
             if (Environment.IsDevelopment())
             {

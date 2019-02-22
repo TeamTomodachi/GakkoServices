@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik
+    command: --api --docker --loglevel=INFO
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # for monitoring dashboard
+    networks:
+      - traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  APIGateway:
+    image: gakkoservices/apigateway
+    build:
+      context: .
+      dockerfile: Dockerfile-aspnetcore
+      args:
+        - name=GakkoServices.APIGateway
+        - BUILD_ENVIRONMENT=Release
+    networks:
+      - internal
+      - traefik
+    labels:
+      traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
+      traefik.frontend.rule: PathPrefixStrip:/api
+      traefik.port: 80
+
+  AuthServer:
+    image: gakkoservices/authserver
+    build:
+      context: .
+      dockerfile: Dockerfile-aspnetcore
+      args:
+        - name=GakkoServices.AuthServer
+    networks:
+      - internal
+      - traefik
+    labels:
+      traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
+      traefik.frontend.rule: PathPrefixStrip:/auth
+      traefik.port: 80
+  
+networks:
+  traefik:
+    external: false
+  internal:
+    external: false

@@ -2,10 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Team Tomodachi</Authors>
+    <Company>Team Tomodachi</Company>
+    <Product />
+    <PackageId>POGOGakko.GakkoServices.Core</PackageId>
+    <Version>1.0.0.0</Version>
+    <PackageLicenseUrl>https://github.com/TeamTomodachi/GakkoServices</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/TeamTomodachi/GakkoServices</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TeamTomodachi/GakkoServices</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <Copyright>Team Tomodachi</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Description>A Core Library for POGO Gakko Services</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\" />
     <Folder Include="Contracts\" />
   </ItemGroup>
 

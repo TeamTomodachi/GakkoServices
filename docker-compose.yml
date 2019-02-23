@@ -5,9 +5,9 @@ services:
     image: traefik
     command: --api --docker --loglevel=INFO
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080" # for monitoring dashboard
+      - 80:80
+      - 443:443
+      - 8080:8080 # for monitoring dashboard
     networks:
       - traefik
     volumes:

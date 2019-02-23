@@ -13,6 +13,16 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    networks:
+      - internal
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia/rabbit@rabbitmq
+    ports:
+      - 15672:15672 # management panel
+
   APIGateway:
     image: gakkoservices/apigateway
     build:

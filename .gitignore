@@ -331,4 +331,4 @@ ASALocalRun/
 .mfractor/
 
 # docker container persistent data
-data
+.docker_data

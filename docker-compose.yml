@@ -19,7 +19,7 @@ services:
     networks:
       - internal
     volumes:
-      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia/rabbit@rabbitmq
+      - ./.docker_data/rabbitmq:/var/lib/rabbitmq/mnesia/rabbit@rabbitmq
     ports:
       - 15672:15672 # management panel
 
@@ -64,7 +64,7 @@ services:
     networks:
       - authserver_db_network
     volumes:
-      - ./data/AuthServer:/var/lib/mysql
+      - ./.docker_data/AuthServer:/var/lib/mysql
     labels:
       traefik.enable: false
 

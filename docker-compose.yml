@@ -46,6 +46,8 @@ services:
       dockerfile: Dockerfile-aspnetcore
       args:
         - name=GakkoServices.AuthServer
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     networks:
       - internal
       - traefik

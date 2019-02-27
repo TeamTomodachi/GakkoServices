@@ -51,11 +51,19 @@ services:
     networks:
       - internal
       - traefik
+      - authserver_db_network
     labels:
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
       traefik.frontend.rule: PathPrefixStrip:/auth
       traefik.port: 80
-  
+
+  AuthServerDB:
+    image: mysql:latest
+    networks:
+      - authserver_db_network
+    labels:
+      traefik.enable: false # TODO: database password?
+
 networks:
   traefik:
     external: false

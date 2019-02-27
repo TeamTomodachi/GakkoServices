@@ -71,3 +71,5 @@ networks:
     external: false
   internal:
     external: false
+  authserver_db_network:
+    external: false

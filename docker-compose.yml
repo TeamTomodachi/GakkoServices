@@ -63,8 +63,12 @@ services:
     image: mysql:latest
     networks:
       - authserver_db_network
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1 # TODO: database password?
+    volumes:
+      - ./data/AuthServer:/var/lib/mysql
     labels:
-      traefik.enable: false # TODO: database password?
+      traefik.enable: false
 
 networks:
   traefik:

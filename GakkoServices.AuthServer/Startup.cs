@@ -15,6 +15,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
+using GakkoServices.AuthServer.Data.Contexts;
+using GakkoServices.AuthServer.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using IdentityModel;
 
 namespace GakkoServices.AuthServer
 {
@@ -33,16 +40,25 @@ namespace GakkoServices.AuthServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // uncomment, if you wan to add an MVC-based UI
+            // Configure Connection String
+            const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;Integrated Security=True";
+
+            // Configure Application Users
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            // Add MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //// Configure IdentityServer
             // configure identity server with in-memory stores, keys, clients and scopes
-            const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;database=IdentityServer4.Quickstart.EntityFramework-2.0.0;trusted_connection=yes;";
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             var builder = services.AddIdentityServer()
-                .AddTestUsers(Config.GetUsers())
+                //.AddTestUsers(Config.GetUsers())
+                .AddAspNetIdentity<ApplicationUser>()
                 // this adds the config data from DB (clients, resources)
                 .AddConfigurationStore(options =>
                 {
@@ -57,8 +73,8 @@ namespace GakkoServices.AuthServer
                         b.UseSqlServer(connectionString,
                             sql => sql.MigrationsAssembly(migrationsAssembly));
 
-        // this enables automatic token cleanup. this is optional.
-        options.EnableTokenCleanup = true;
+                    // this enables automatic token cleanup. this is optional.
+                    options.EnableTokenCleanup = true;
                 });
 
             //var builder = services.AddIdentityServer()
@@ -76,26 +92,26 @@ namespace GakkoServices.AuthServer
                     options.ClientId = "<insert here>";
                     options.ClientSecret = "<inser here>";
                 })
-                //// Not sure if should be in AuthServer...
-                //.AddOpenIdConnect("oidc", "IdentityServer", options =>
-                //{
-                //    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                //    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+            //// Not sure if should be in AuthServer...
+            //.AddOpenIdConnect("oidc", "IdentityServer", options =>
+            //{
+            //    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+            //    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
-                //    options.Authority = "http://localhost:5001";
-                //    options.ClientId = "implicit";
-                //    options.ResponseType = "id_token";
-                //    options.SaveTokens = true;
-                //    options.CallbackPath = new PathString("/signin-idsrv");
-                //    options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
-                //    options.RemoteSignOutPath = new PathString("/signout-idsrv");
+            //    options.Authority = "http://localhost:5001";
+            //    options.ClientId = "implicit";
+            //    options.ResponseType = "id_token";
+            //    options.SaveTokens = true;
+            //    options.CallbackPath = new PathString("/signin-idsrv");
+            //    options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
+            //    options.RemoteSignOutPath = new PathString("/signout-idsrv");
 
-                //    options.TokenValidationParameters = new TokenValidationParameters
-                //    {
-                //        NameClaimType = "name",
-                //        RoleClaimType = "role"
-                //    };
-                //})
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        NameClaimType = "name",
+            //        RoleClaimType = "role"
+            //    };
+            //})
             ;
 
             if (Environment.IsDevelopment())
@@ -111,6 +127,9 @@ namespace GakkoServices.AuthServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // Initialize our Databases
+            InitializeDatabase(app);
+
             // Configure our Error Pages
             if (env.IsDevelopment())
             {
@@ -133,6 +152,59 @@ namespace GakkoServices.AuthServer
             // Setup MVC with a Default Route
             app.UseMvcWithDefaultRoute();
             //app.UseMvc();
+        }
+
+        private void InitializeDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                // Migrate the ApplicationDbContext
+                var applicationDbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var userMgr = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                applicationDbContext.Database.Migrate();
+                if (!applicationDbContext.Users.Any())
+                {
+                    foreach (var testUser in Config.GetUsers())
+                    {
+                        ApplicationUser aUser = new ApplicationUser(testUser.Username);
+                        var result = userMgr.CreateAsync(aUser, testUser.Password).Result;
+                        var claimResult = userMgr.AddClaimsAsync(aUser, testUser.Claims);
+                    }
+                }
+
+                // Migrate the Persisted Grant DB Context
+                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+
+                // Migrate the ConfigurationDbContext
+                var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                context.Database.Migrate();
+                if (!context.Clients.Any())
+                {
+                    foreach (var client in Config.GetClients())
+                    {
+                        context.Clients.Add(client.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
+                if (!context.IdentityResources.Any())
+                {
+                    foreach (var resource in Config.GetIdentityResources())
+                    {
+                        context.IdentityResources.Add(resource.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
+                if (!context.ApiResources.Any())
+                {
+                    foreach (var resource in Config.GetApis())
+                    {
+                        context.ApiResources.Add(resource.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+            }
         }
     }
 }

@@ -60,13 +60,20 @@ services:
       traefik.port: 80
 
   AuthServerDB:
-    image: mysql:latest
+    image: postgres:alpine
     networks:
       - authserver_db_network
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1 # TODO: database password?
     volumes:
       - ./data/AuthServer:/var/lib/mysql
+    labels:
+      traefik.enable: false
+
+  adminer:
+    image: adminer
+    networks:
+      - authserver_db_network
+    ports:
+      - 8081:8080
     labels:
       traefik.enable: false
 

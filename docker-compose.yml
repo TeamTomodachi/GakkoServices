@@ -2,7 +2,7 @@ version: '3'
 
 services:
   traefik:
-    image: traefik
+    image: traefik:alpine
     command: --api --docker --loglevel=INFO
     ports:
       - 80:80

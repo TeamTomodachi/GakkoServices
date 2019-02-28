@@ -49,6 +49,11 @@ namespace GakkoServices.AuthServer.Controllers
             _logger = loggerFactory.CreateLogger<UserAccountController>();
         }
 
+        /// <summary>
+        /// Creates a Brand new User in the system
+        /// </summary>
+        /// <param name="item">A UserCreate containing Username, Email and Password</param>
+        /// <returns>A success message, or errors</returns>
         [HttpPost]
         public async Task<IActionResult> RegisterNewUser([FromBody] UserCreate item)
         {

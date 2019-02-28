@@ -40,7 +40,6 @@ namespace GakkoServices.AuthServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
             // Configure Connection String
             const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;Integrated Security=True";
 
@@ -52,6 +51,12 @@ namespace GakkoServices.AuthServer
 
             // Add MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // Configure Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Auth Server API", Version = "v1" });
+            });
 
             //// Configure IdentityServer
             // configure identity server with in-memory stores, keys, clients and scopes
@@ -139,12 +144,19 @@ namespace GakkoServices.AuthServer
             // Setup our pipeline to use Static Files...
             app.UseStaticFiles();
 
+            // Enable Swagger Middleware
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth Server API");
+            });
+
             // Load in IdentityServer Middleware
             app.UseIdentityServer();
 
             // Setup MVC with a Default Route
-            app.UseMvcWithDefaultRoute();
-            //app.UseMvc();
+            //app.UseMvcWithDefaultRoute();
+            app.UseMvc();
         }
 
         private void InitializeDatabase(IApplicationBuilder app)

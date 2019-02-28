@@ -80,7 +80,8 @@ namespace GakkoServices.AuthServer
 
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
-                });
+                })
+                .AddDeveloperSigningCredential();
 
             // Add in Authentication Providers
             services.AddAuthentication()
@@ -104,6 +105,7 @@ namespace GakkoServices.AuthServer
                     options.CallbackPath = new PathString("/signin-idsrv");
                     options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
                     options.RemoteSignOutPath = new PathString("/signout-idsrv");
+                    options.RequireHttpsMetadata = false; // For debugging
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -111,10 +113,15 @@ namespace GakkoServices.AuthServer
                         RoleClaimType = "role"
                     };
                 });
+            //.AddJwtBearer(options => // For debugging
+            //{ 
+            //    options.Authority = Configuration["Auth0:Authority"];
+            //    options.Audience = Configuration["Auth0:Audience"];
+            //    options.RequireHttpsMetadata = false; 
+            //}); 
 
             if (Environment.IsDevelopment())
             {
-                builder.AddDeveloperSigningCredential();
             }
             else
             {
@@ -126,7 +133,7 @@ namespace GakkoServices.AuthServer
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             // Initialize our Databases
-            InitializeDatabase(app);
+            //InitializeDatabase(app);
 
             // Configure our Error Pages
             if (env.IsDevelopment())
@@ -144,6 +151,9 @@ namespace GakkoServices.AuthServer
             // Setup our pipeline to use Static Files...
             app.UseStaticFiles();
 
+            // Load in IdentityServer Middleware
+            app.UseIdentityServer();
+
             // Enable Swagger Middleware
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -151,12 +161,9 @@ namespace GakkoServices.AuthServer
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth Server API");
             });
 
-            // Load in IdentityServer Middleware
-            app.UseIdentityServer();
-
             // Setup MVC with a Default Route
-            //app.UseMvcWithDefaultRoute();
-            app.UseMvc();
+            app.UseMvcWithDefaultRoute();
+            //app.UseMvc();
         }
 
         private void InitializeDatabase(IApplicationBuilder app)

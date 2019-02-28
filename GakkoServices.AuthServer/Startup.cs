@@ -22,11 +22,15 @@ using GakkoServices.AuthServer.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using IdentityModel;
+using IdentityServer4.Hosting;
 
 namespace GakkoServices.AuthServer
 {
     public class Startup
     {
+        const string AUTHSERVER_ENDPOINT_REWRITE = "authserver";
+        const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;Integrated Security=True";
+
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
 
@@ -41,7 +45,6 @@ namespace GakkoServices.AuthServer
         public void ConfigureServices(IServiceCollection services)
         {
             // Configure Connection String
-            const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;Integrated Security=True";
 
             // Configure Application Users
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
@@ -82,6 +85,25 @@ namespace GakkoServices.AuthServer
                     options.EnableTokenCleanup = true;
                 })
                 .AddDeveloperSigningCredential();
+
+            // ToDo: Change the IdentityServer Endpoints
+            // https://stackoverflow.com/questions/39186533/change-default-endpoint-in-identityserver-4
+            //builder.Services
+            // .Where(service => service.ServiceType == typeof(Endpoint))
+            // .Select(item => (Endpoint)item.ImplementationInstance)
+            // .ToList()
+            // .ForEach(item =>
+            //     {
+            //         if (item.Path.Value.Contains("/connect"))
+            //         {
+            //             item.Path = item.Path.Value.Replace("/connect", $"/{AUTHSERVER_ENDPOINT_REWRITE}/connect");
+            //         }
+            //         else if (item.Path.Value.Contains("/.well-known"))
+            //         {
+            //             item.Path = item.Path.Value.Replace("/.well-known", $"/{AUTHSERVER_ENDPOINT_REWRITE}/.well-known");
+            //         }
+            //     });
+
 
             // Add in Authentication Providers
             services.AddAuthentication()
@@ -132,6 +154,9 @@ namespace GakkoServices.AuthServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // Change the Root Path of the AuthServer
+            app.UsePathBase($"/{AUTHSERVER_ENDPOINT_REWRITE}");
+
             // Initialize our Databases
             //InitializeDatabase(app);
 
@@ -158,7 +183,7 @@ namespace GakkoServices.AuthServer
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth Server API");
+                c.SwaggerEndpoint($"/{AUTHSERVER_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Auth Server API");
             });
 
             // Setup MVC with a Default Route

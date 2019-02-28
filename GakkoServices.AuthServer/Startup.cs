@@ -153,17 +153,7 @@ namespace GakkoServices.AuthServer
             {
                 // Migrate the ApplicationDbContext
                 var applicationDbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                var userMgr = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 applicationDbContext.Database.Migrate();
-                if (!applicationDbContext.Users.Any())
-                {
-                    foreach (var testUser in Config.GetUsers())
-                    {
-                        ApplicationUser aUser = new ApplicationUser(testUser.Username);
-                        var result = userMgr.CreateAsync(aUser, testUser.Password).Result;
-                        var claimResult = userMgr.AddClaimsAsync(aUser, testUser.Claims);
-                    }
-                }
 
                 // Migrate the Persisted Grant DB Context
                 serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();

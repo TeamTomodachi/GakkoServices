@@ -40,6 +40,7 @@ namespace GakkoServices.AuthServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             // Configure Connection String
             const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;Integrated Security=True";
 
@@ -57,7 +58,6 @@ namespace GakkoServices.AuthServer
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             var builder = services.AddIdentityServer()
-                //.AddTestUsers(Config.GetUsers())
                 .AddAspNetIdentity<ApplicationUser>()
                 // this adds the config data from DB (clients, resources)
                 .AddConfigurationStore(options =>
@@ -77,12 +77,6 @@ namespace GakkoServices.AuthServer
                     options.EnableTokenCleanup = true;
                 });
 
-            //var builder = services.AddIdentityServer()
-            //    .AddInMemoryIdentityResources(Config.GetIdentityResources())
-            //    .AddInMemoryApiResources(Config.GetApis())
-            //    .AddInMemoryClients(Config.GetClients())
-            //    .AddTestUsers(Config.GetUsers());
-
             // Add in Authentication Providers
             services.AddAuthentication()
                 .AddGoogle("Google", options =>
@@ -92,27 +86,26 @@ namespace GakkoServices.AuthServer
                     options.ClientId = "<insert here>";
                     options.ClientSecret = "<inser here>";
                 })
-            //// Not sure if should be in AuthServer...
-            //.AddOpenIdConnect("oidc", "IdentityServer", options =>
-            //{
-            //    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-            //    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+                // Not sure if should be in AuthServer...
+                .AddOpenIdConnect("oidc", "IdentityServer", options =>
+                {
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
-            //    options.Authority = "http://localhost:5001";
-            //    options.ClientId = "implicit";
-            //    options.ResponseType = "id_token";
-            //    options.SaveTokens = true;
-            //    options.CallbackPath = new PathString("/signin-idsrv");
-            //    options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
-            //    options.RemoteSignOutPath = new PathString("/signout-idsrv");
+                    options.Authority = "http://localhost:5001";
+                    options.ClientId = "implicit";
+                    options.ResponseType = "id_token";
+                    options.SaveTokens = true;
+                    options.CallbackPath = new PathString("/signin-idsrv");
+                    options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
+                    options.RemoteSignOutPath = new PathString("/signout-idsrv");
 
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        NameClaimType = "name",
-            //        RoleClaimType = "role"
-            //    };
-            //})
-            ;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        NameClaimType = "name",
+                        RoleClaimType = "role"
+                    };
+                });
 
             if (Environment.IsDevelopment())
             {

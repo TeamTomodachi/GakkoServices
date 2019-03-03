@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace GakkoServices.AuthServer
 
         public static SupportedDatabaseServerEngines GetDatabaseServerEngine(IConfiguration configuration)
         {
-            string engine = configuration["dbConnectionString"];
+            string engine = configuration["dbServerEngine"];
             switch (engine?.ToLower())
             {
                 case "1":

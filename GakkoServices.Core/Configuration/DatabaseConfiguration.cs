@@ -22,11 +22,15 @@ namespace GakkoServices.Core.Configuration
         public string dbConnectionStringConfigurationKey { get; set; } = "dbConnectionString";
         public string dbServerEngineConfigurationKey { get; set; } = "dbServerEngine";
 
-        public DatabaseConfiguration(IConfiguration configuration, IApplicationBuilder app, Assembly migrationAssembly)
+        public DatabaseConfiguration(IConfiguration configuration, Assembly migrationAssembly)
         {
             Configuration = configuration;
-            ApplicationBuilder = app;
             MigrationAssembly = migrationAssembly;
+        }
+
+        public DatabaseConfiguration(IConfiguration configuration, IApplicationBuilder app, Assembly migrationAssembly) :this(configuration, migrationAssembly)
+        {
+            ApplicationBuilder = app;
         }
 
         public virtual string GetConnectionString()

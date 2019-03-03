@@ -53,8 +53,10 @@ namespace GakkoServices.AuthServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AuthServerDatabaseConfiguration databaseConfig = new AuthServerDatabaseConfiguration(Configuration, null);
+
             // Configure Application Users
-            services.AddDbContext<ApplicationDbContext>(options => DatabaseConfig.BuildDBContext(options, Configuration));
+            services.AddDbContext<ApplicationDbContext>(options => databaseConfig.BuildDBContext(options));
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -77,11 +79,11 @@ namespace GakkoServices.AuthServer
             }).AddAspNetIdentity<ApplicationUser>()
             .AddConfigurationStore(options => // this adds the config data from DB (clients, resources)
             {
-                options.ConfigureDbContext = b => DatabaseConfig.BuildDBContext(b, Configuration);
+                options.ConfigureDbContext = b => databaseConfig.BuildDBContext(b);
             })
             .AddOperationalStore(options => // this adds the operational data from DB (codes, tokens, consents)
             {
-                options.ConfigureDbContext = b => DatabaseConfig.BuildDBContext(b, Configuration);
+                options.ConfigureDbContext = b => databaseConfig.BuildDBContext(b);
                 options.EnableTokenCleanup = true; // this enables automatic token cleanup. this is optional.
             })
             .AddDeveloperSigningCredential();
@@ -158,7 +160,8 @@ namespace GakkoServices.AuthServer
             app.UsePathBase($"/{AUTHSERVER_ENDPOINT_REWRITE}");
 
             // Initialize our Databases
-            DatabaseConfig.InitializeDatabase(app);
+            AuthServerDatabaseConfiguration databaseConfig = new AuthServerDatabaseConfiguration(Configuration, app);
+            databaseConfig.InitializeDatabase(app);
 
             // Configure our Error Pages
             if (env.IsDevelopment())

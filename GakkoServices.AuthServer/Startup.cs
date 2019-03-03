@@ -28,8 +28,7 @@ namespace GakkoServices.AuthServer
 {
     public class Startup
     {
-        const string AUTHSERVER_ENDPOINT_REWRITE = "authserver";
-        const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;Integrated Security=True";
+        const string AUTHSERVER_ENDPOINT_REWRITE = "auth";
 
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
@@ -38,16 +37,24 @@ namespace GakkoServices.AuthServer
         {
             Configuration = configuration;
             Environment = environment;
+
+            // Setup Configuraiton
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("secretappsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{Environment.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"secretappsettings.{Environment.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Configure Connection String
-
             // Configure Application Users
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<ApplicationDbContext>(options => Database.BuildDBContext(options, Configuration));
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -63,28 +70,21 @@ namespace GakkoServices.AuthServer
 
             //// Configure IdentityServer
             // configure identity server with in-memory stores, keys, clients and scopes
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
-            var builder = services.AddIdentityServer()
-                .AddAspNetIdentity<ApplicationUser>()
-                // this adds the config data from DB (clients, resources)
-                .AddConfigurationStore(options =>
-                {
-                    options.ConfigureDbContext = b =>
-                        b.UseSqlServer(connectionString,
-                            sql => sql.MigrationsAssembly(migrationsAssembly));
-                })
-                // this adds the operational data from DB (codes, tokens, consents)
-                .AddOperationalStore(options =>
-                {
-                    options.ConfigureDbContext = b =>
-                        b.UseSqlServer(connectionString,
-                            sql => sql.MigrationsAssembly(migrationsAssembly));
-
-                    // this enables automatic token cleanup. this is optional.
-                    options.EnableTokenCleanup = true;
-                })
-                .AddDeveloperSigningCredential();
+            var builder = services.AddIdentityServer(options =>
+            {
+                options.Discovery.CustomEntries.Add("UserAccount", "~/api/UserAccount");
+            }).AddAspNetIdentity<ApplicationUser>()
+            .AddConfigurationStore(options => // this adds the config data from DB (clients, resources)
+            {
+                options.ConfigureDbContext = b => Database.BuildDBContext(b, Configuration);
+            })
+            .AddOperationalStore(options => // this adds the operational data from DB (codes, tokens, consents)
+            {
+                options.ConfigureDbContext = b => Database.BuildDBContext(b, Configuration);
+                options.EnableTokenCleanup = true; // this enables automatic token cleanup. this is optional.
+            })
+            .AddDeveloperSigningCredential();
 
             // ToDo: Change the IdentityServer Endpoints
             // https://stackoverflow.com/questions/39186533/change-default-endpoint-in-identityserver-4
@@ -158,7 +158,7 @@ namespace GakkoServices.AuthServer
             app.UsePathBase($"/{AUTHSERVER_ENDPOINT_REWRITE}");
 
             // Initialize our Databases
-            //InitializeDatabase(app);
+            Database.InitializeDatabase(app);
 
             // Configure our Error Pages
             if (env.IsDevelopment())
@@ -189,49 +189,6 @@ namespace GakkoServices.AuthServer
             // Setup MVC with a Default Route
             app.UseMvcWithDefaultRoute();
             //app.UseMvc();
-        }
-
-        private void InitializeDatabase(IApplicationBuilder app)
-        {
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                // Migrate the ApplicationDbContext
-                var applicationDbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                applicationDbContext.Database.Migrate();
-
-                // Migrate the Persisted Grant DB Context
-                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
-
-                // Migrate the ConfigurationDbContext
-                var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                context.Database.Migrate();
-                if (!context.Clients.Any())
-                {
-                    foreach (var client in Config.GetClients())
-                    {
-                        context.Clients.Add(client.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-
-                if (!context.IdentityResources.Any())
-                {
-                    foreach (var resource in Config.GetIdentityResources())
-                    {
-                        context.IdentityResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-
-                if (!context.ApiResources.Any())
-                {
-                    foreach (var resource in Config.GetApis())
-                    {
-                        context.ApiResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-            }
         }
     }
 }

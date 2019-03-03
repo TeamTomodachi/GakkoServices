@@ -54,7 +54,7 @@ namespace GakkoServices.AuthServer
         public void ConfigureServices(IServiceCollection services)
         {
             // Configure Application Users
-            services.AddDbContext<ApplicationDbContext>(options => Database.BuildDBContext(options, Configuration));
+            services.AddDbContext<ApplicationDbContext>(options => DatabaseConfig.BuildDBContext(options, Configuration));
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -77,11 +77,11 @@ namespace GakkoServices.AuthServer
             }).AddAspNetIdentity<ApplicationUser>()
             .AddConfigurationStore(options => // this adds the config data from DB (clients, resources)
             {
-                options.ConfigureDbContext = b => Database.BuildDBContext(b, Configuration);
+                options.ConfigureDbContext = b => DatabaseConfig.BuildDBContext(b, Configuration);
             })
             .AddOperationalStore(options => // this adds the operational data from DB (codes, tokens, consents)
             {
-                options.ConfigureDbContext = b => Database.BuildDBContext(b, Configuration);
+                options.ConfigureDbContext = b => DatabaseConfig.BuildDBContext(b, Configuration);
                 options.EnableTokenCleanup = true; // this enables automatic token cleanup. this is optional.
             })
             .AddDeveloperSigningCredential();
@@ -158,7 +158,7 @@ namespace GakkoServices.AuthServer
             app.UsePathBase($"/{AUTHSERVER_ENDPOINT_REWRITE}");
 
             // Initialize our Databases
-            Database.InitializeDatabase(app);
+            DatabaseConfig.InitializeDatabase(app);
 
             // Configure our Error Pages
             if (env.IsDevelopment())

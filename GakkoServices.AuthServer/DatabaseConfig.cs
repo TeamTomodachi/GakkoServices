@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace GakkoServices.AuthServer
 {
-    public static class Database
+    public static class DatabaseConfig
     {
         public enum SupportedDatabaseServerEngines
         {
@@ -92,7 +92,7 @@ namespace GakkoServices.AuthServer
                 context.Database.Migrate();
                 if (!context.Clients.Any())
                 {
-                    foreach (var client in Config.GetClients())
+                    foreach (var client in IdentityServerConfig.GetClients())
                     {
                         context.Clients.Add(client.ToEntity());
                     }
@@ -101,7 +101,7 @@ namespace GakkoServices.AuthServer
 
                 if (!context.IdentityResources.Any())
                 {
-                    foreach (var resource in Config.GetIdentityResources())
+                    foreach (var resource in IdentityServerConfig.GetIdentityResources())
                     {
                         context.IdentityResources.Add(resource.ToEntity());
                     }
@@ -110,7 +110,7 @@ namespace GakkoServices.AuthServer
 
                 if (!context.ApiResources.Any())
                 {
-                    foreach (var resource in Config.GetApis())
+                    foreach (var resource in IdentityServerConfig.GetApis())
                     {
                         context.ApiResources.Add(resource.ToEntity());
                     }

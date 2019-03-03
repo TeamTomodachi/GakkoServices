@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GakkoServices.AuthServer
 {
-    public static class Config
+    public static class IdentityServerConfig
     {
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {

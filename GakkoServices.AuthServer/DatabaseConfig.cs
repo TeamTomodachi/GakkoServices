@@ -17,9 +17,9 @@ namespace GakkoServices.AuthServer
     {
         public enum SupportedDatabaseServerEngines
         {
-            None,
-            MSSQL,
-            Postgresql
+            None = 0,
+            MSSQL = 1,
+            Postgresql = 2
         }
 
         public static string GetConnectionString(IConfiguration configuration)

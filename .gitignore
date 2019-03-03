@@ -201,3 +201,6 @@ paket-files/
 
 # docker container persistent data
 .docker_data
+
+# Ignore Secret Data
+secretappsettings.json

@@ -23,6 +23,8 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using IdentityModel;
 using IdentityServer4.Hosting;
+using RawRabbit;
+using RawRabbit.vNext;
 
 namespace GakkoServices.AuthServer
 {
@@ -121,11 +123,17 @@ namespace GakkoServices.AuthServer
                     options.ClientSecret = Configuration["ExternalAuthenticationProviders:Discord:ClientSecret"];
                 });
             //.AddJwtBearer(options => // For debugging
-            //{ 
+            //{
             //    options.Authority = Configuration["Auth0:Authority"];
             //    options.Audience = Configuration["Auth0:Audience"];
-            //    options.RequireHttpsMetadata = false; 
-            //}); 
+            //    options.RequireHttpsMetadata = false;
+            //});
+
+            services.AddRawRabbit(options =>
+            {
+                options.AddJsonFile("rawrabbit.json");
+                options.AddEnvironmentVariables("RawRabbit:");
+            });
 
             if (Environment.IsDevelopment())
             {

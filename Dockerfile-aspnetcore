@@ -15,8 +15,8 @@ ARG name
 
 WORKDIR /app
 
-COPY --from=build-env /app/${name}/out .
+COPY --from=build-env /app/* ./
 
 # can't use arg in ENTRYPOINT, so give a static name
-RUN ln -s ./$name.dll entrypoint.dll
+RUN ln -s ./out/$name.dll entrypoint.dll
 ENTRYPOINT ["dotnet", "entrypoint.dll"]

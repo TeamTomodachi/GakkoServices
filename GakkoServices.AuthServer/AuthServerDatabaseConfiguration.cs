@@ -29,7 +29,7 @@ namespace GakkoServices.AuthServer
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
                 // Migrate the ApplicationDbContext
-                var applicationDbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var applicationDbContext = serviceScope.ServiceProvider.GetRequiredService<AspIdentityDbContext>();
                 applicationDbContext.Database.Migrate();
 
                 // Migrate the Persisted Grant DB Context

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace GakkoServices.AuthServer.Data.Contexts
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+    public class AspIdentityDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public AspIdentityDbContext(DbContextOptions<AspIdentityDbContext> options)
             : base(options)
         {
         }

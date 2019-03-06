@@ -6,7 +6,8 @@
 
   <ItemGroup>
     <Folder Include="Business\Services\" />
-    <Folder Include="Data\Migrations\Application\" />
+    <Folder Include="Data\Migrations\AspIdentity\" />
+    <Folder Include="Tools\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

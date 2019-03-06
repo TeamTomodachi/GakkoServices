@@ -56,9 +56,9 @@ namespace GakkoServices.AuthServer
             AuthServerDatabaseConfiguration databaseConfig = new AuthServerDatabaseConfiguration(Configuration, null);
 
             // Configure Application Users
-            services.AddDbContext<ApplicationDbContext>(options => databaseConfig.BuildDBContext(options));
+            services.AddDbContext<AspIdentityDbContext>(options => databaseConfig.BuildDBContext(options));
             services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<AspIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
             // Add MVC

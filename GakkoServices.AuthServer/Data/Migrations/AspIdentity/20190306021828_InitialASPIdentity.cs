@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace GakkoServices.AuthServer.Data.Migrations.Application
+namespace GakkoServices.AuthServer.Data.Migrations.AspIdentity
 {
-    public partial class InitialApplicationDbContext : Migration
+    public partial class InitialASPIdentity : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

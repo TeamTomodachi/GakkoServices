@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace GakkoServices.AuthServer.Data.Migrations.Application
+namespace GakkoServices.AuthServer.Data.Migrations.AspIdentity
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190227045928_InitialApplicationDbContext")]
-    partial class InitialApplicationDbContext
+    [DbContext(typeof(AspIdentityDbContext))]
+    [Migration("20190306021828_InitialASPIdentity")]
+    partial class InitialASPIdentity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

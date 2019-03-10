@@ -30,7 +30,7 @@ namespace GakkoServices.AuthServer
 {
     public class Startup
     {
-        const string AUTHSERVER_ENDPOINT_REWRITE = "auth";
+        const string SERVICE_ENDPOINT_REWRITE = "auth";
 
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
@@ -148,7 +148,7 @@ namespace GakkoServices.AuthServer
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             // Change the Root Path of the AuthServer
-            app.UsePathBase($"/{AUTHSERVER_ENDPOINT_REWRITE}");
+            app.UsePathBase($"/{SERVICE_ENDPOINT_REWRITE}");
 
             // Initialize our Databases
             try
@@ -181,7 +181,7 @@ namespace GakkoServices.AuthServer
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/{AUTHSERVER_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Auth Server API");
+                c.SwaggerEndpoint($"/{SERVICE_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Auth Server API");
             });
 
             // Setup MVC with a Default Route

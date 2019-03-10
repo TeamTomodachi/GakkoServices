@@ -4,7 +4,7 @@ param();
 #Script Location
 $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition;
 $rootProjectPath = (get-item $scriptPath).parent.FullName;
-$migrationsProjectPath = $rootProjectPath + "\Data\Migrations";
+$migrationsProjectPath = Join-Path $rootProjectPath "Data" "Migrations";
 Write-Host "Script Path: $scriptPath";
 Write-Host "Root Project Path: $rootProjectPath";
 Write-Host "Migrations Path: $migrationsProjectPath";

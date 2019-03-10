@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GakkoServices.AuthServer.Models;
 using GakkoServices.AuthServer.Models.UserAccount;
+using GakkoServices.Core.Messages;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using RawRabbit;
 
 namespace GakkoServices.AuthServer.Controllers
 {
@@ -27,6 +29,7 @@ namespace GakkoServices.AuthServer.Controllers
         private readonly IEventService _events;
         //private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
+        private readonly IBusClient _bus;
 
 
         public UserAccountController(
@@ -37,7 +40,8 @@ namespace GakkoServices.AuthServer.Controllers
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
             //IEmailSender emailSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IBusClient bus)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -47,6 +51,7 @@ namespace GakkoServices.AuthServer.Controllers
             _events = events;
             //_emailSender = emailSender;
             _logger = loggerFactory.CreateLogger<UserAccountController>();
+            _bus = bus;
         }
 
         /// <summary>
@@ -79,6 +84,8 @@ namespace GakkoServices.AuthServer.Controllers
                 // Sign in the new User, log that their account was created...
                 await _signInManager.SignInAsync(newUser, isPersistent: false);
                 _logger.LogInformation(3, $"User: ${newUser.UserName}, created a new account with password.");
+
+                _bus.PublishAsync<UserCreateMessage>(new UserCreateMessage { Id = newUser.Id });
 
                 // Return with a success message
                 return new ObjectResult($"User was successfully created");

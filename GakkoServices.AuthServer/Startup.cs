@@ -131,8 +131,9 @@ namespace GakkoServices.AuthServer
 
             services.AddRawRabbit(options =>
             {
-                options.AddJsonFile("rawrabbit.json");
-                options.AddEnvironmentVariables("RawRabbit:");
+                options.SetBasePath(Environment.ContentRootPath)
+                    .AddJsonFile("rawrabbit.json")
+                    .AddEnvironmentVariables("RawRabbit:");
             });
 
             if (Environment.IsDevelopment())

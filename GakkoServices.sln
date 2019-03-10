@@ -15,6 +15,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GakkoServices.Microservices.MetadataService", "GakkoServices.Microservices.MetadataService\GakkoServices.Microservices.MetadataService.csproj", "{E54A3F5B-DFA3-44A1-8F6D-FBFFF1FAFDB7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{E4D0E551-D28A-4E1B-B9A8-A2352CED6AA8}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\GenerateAllMigrations.ps1 = Scripts\GenerateAllMigrations.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

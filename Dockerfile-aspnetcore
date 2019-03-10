@@ -5,9 +5,13 @@ ARG BUILD_ENVIRONMENT=Debug
 
 WORKDIR /app
 
-COPY . ./
-RUN cd "$name" && dotnet restore
-RUN cd "$name" && dotnet publish -c $BUILD_ENVIRONMENT -o out
+COPY ./${name}/${name}.csproj ./${name}.csproj
+RUN dotnet restore
+
+COPY ./${name} .
+RUN ls -l
+RUN dotnet publish -c $BUILD_ENVIRONMENT -o out
+RUN ls -l
 
 # runtime container with built application
 FROM microsoft/dotnet:aspnetcore-runtime
@@ -15,8 +19,8 @@ ARG name
 
 WORKDIR /app
 
-COPY --from=build-env /app/* ./
+COPY --from=build-env /app/out ./
 
 # can't use arg in ENTRYPOINT, so give a static name
-RUN ln -s ./out/$name.dll entrypoint.dll
+RUN ln -s ./$name.dll entrypoint.dll
 ENTRYPOINT ["dotnet", "entrypoint.dll"]

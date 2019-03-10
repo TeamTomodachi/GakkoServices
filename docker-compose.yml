@@ -54,6 +54,7 @@ services:
       - authserver_db_network
     depends_on:
       - AuthServerDB
+      - rabbitmq
     labels:
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
       traefik.frontend.rule: PathPrefixStrip:/auth

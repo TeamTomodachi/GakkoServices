@@ -106,36 +106,19 @@ namespace GakkoServices.AuthServer
             //         }
             //     });
 
-
             // Add in Authentication Providers
             services.AddAuthentication()
                 .AddGoogle("Google", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                    options.ClientId = "<insert here>";
-                    options.ClientSecret = "<inser here>";
+                    options.ClientId = Configuration["ExternalAuthenticationProviders:Google:ClientId"];
+                    options.ClientSecret = Configuration["ExternalAuthenticationProviders:Google:ClientSecret"];
                 })
-                // Not sure if should be in AuthServer...
-                .AddOpenIdConnect("oidc", "IdentityServer", options =>
+                .AddDiscord("Discord", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-
-                    options.Authority = "http://localhost:5001";
-                    options.ClientId = "implicit";
-                    options.ResponseType = "id_token";
-                    options.SaveTokens = true;
-                    options.CallbackPath = new PathString("/signin-idsrv");
-                    options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
-                    options.RemoteSignOutPath = new PathString("/signout-idsrv");
-                    options.RequireHttpsMetadata = false; // For debugging
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
+                    options.ClientId = Configuration["ExternalAuthenticationProviders:Discord:ClientId"];
+                    options.ClientSecret = Configuration["ExternalAuthenticationProviders:Discord:ClientSecret"];
                 });
             //.AddJwtBearer(options => // For debugging
             //{ 
@@ -160,8 +143,12 @@ namespace GakkoServices.AuthServer
             app.UsePathBase($"/{AUTHSERVER_ENDPOINT_REWRITE}");
 
             // Initialize our Databases
-            AuthServerDatabaseConfiguration databaseConfig = new AuthServerDatabaseConfiguration(Configuration, app);
-            databaseConfig.InitializeDatabase(app);
+            try
+            {
+                AuthServerDatabaseConfiguration databaseConfig = new AuthServerDatabaseConfiguration(Configuration, app);
+                databaseConfig.InitializeDatabase(app);
+            }
+            catch (Exception) { }
 
             // Configure our Error Pages
             if (env.IsDevelopment())

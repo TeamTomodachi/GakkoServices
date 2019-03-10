@@ -10,7 +10,18 @@ The format of the file is as follows
   "dbUsername": "",
   "dbPassword": "",
   "dbConnectionString": "",
-  "dbServerEngine": ""
+  "dbServerEngine": "",
+  
+  "ExternalAuthenticationProviders": {
+    "Google": {
+      "ClientId": "<insert here>",
+      "ClientSecret": "<insert here>"
+    },
+    "Discord": {
+      "ClientId": "<insert here>",
+      "ClientSecret": "<insert here>"
+    }
+  }
 }
 ```
 

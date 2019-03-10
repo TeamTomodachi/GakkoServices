@@ -19,5 +19,29 @@ namespace GakkoServices.Core.Helpers
             var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
             return Encoding.UTF8.GetString(base64EncodedBytes);
         }
+
+        public static bool IsBase64String(string base64EncodedData)
+        {
+            try
+            {
+                var decodedString = DecodeBase64String(base64EncodedData);
+                return true;
+            }
+            catch (Exception) { return false; }
+        }
+
+        public static bool IsBase64String(string base64EncodedData, out string decodedString)
+        {
+            try
+            {
+                decodedString = DecodeBase64String(base64EncodedData);
+                return true;
+            }
+            catch (Exception)
+            {
+                decodedString = "";
+                return false;
+            }
+        }
     }
 }

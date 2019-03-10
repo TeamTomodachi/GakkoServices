@@ -62,13 +62,6 @@ namespace GakkoServices.AuthServer.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterNewUser([FromBody] UserCreate item)
         {
-            //// May not be needed...
-            //// Search for Existing Users
-            //var existingUserName = await _userManager.FindByNameAsync(item.Username);
-            //var existingEmail = await _userManager.FindByEmailAsync(item.Email);
-            //if (existingUserName != null) { return new ObjectResult("There exists a user with this username in the system"); }
-            //if (existingEmail != null) { return new ObjectResult("There exists a user with this email in the system"); }
-
             // Create the User
             var newUser = new ApplicationUser { UserName = item.Username, Email = item.Email };
             var result = await _userManager.CreateAsync(newUser, item.Password);

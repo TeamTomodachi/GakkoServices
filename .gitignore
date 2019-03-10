@@ -207,3 +207,6 @@ paket-files/
 **/secretappsettings.Development.json
 GakkoServices.Microservices.MetadataService/secretappsettings.json
 GakkoServices.Microservices.MetadataService/secretappsettings.Development.json
+
+# ignore migrations
+**/Migrations

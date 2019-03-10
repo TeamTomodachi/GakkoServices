@@ -203,5 +203,5 @@ paket-files/
 .docker_data
 
 # Ignore Secret Data
-secretappsettings.json
-secretappsettings*.json
+**/secretappsettings.json
+**/secretappsettings*.json

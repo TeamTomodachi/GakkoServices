@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GakkoServices.AuthServer", "GakkoServices.AuthServer\GakkoServices.AuthServer.csproj", "{291195BB-AAF3-46C3-84AC-FFAAAB5E81B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GakkoServices.AuthServer", "GakkoServices.AuthServer\GakkoServices.AuthServer.csproj", "{291195BB-AAF3-46C3-84AC-FFAAAB5E81B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GakkoServices.Core", "GakkoServices.Core\GakkoServices.Core.csproj", "{FA64CE50-F9EB-4945-B9FF-FFB46AA2ED39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GakkoServices.Core", "GakkoServices.Core\GakkoServices.Core.csproj", "{FA64CE50-F9EB-4945-B9FF-FFB46AA2ED39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GakkoServices.APIGateway", "GakkoServices.APIGateway\GakkoServices.APIGateway.csproj", "{13802F7E-54D9-4867-B56D-2C2A4C38CAB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GakkoServices.APIGateway", "GakkoServices.APIGateway\GakkoServices.APIGateway.csproj", "{13802F7E-54D9-4867-B56D-2C2A4C38CAB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GakkoServices.Microservices.ProfileService", "GakkoServices.Microservices.ProfileService\GakkoServices.Microservices.ProfileService.csproj", "{C0FFA1EE-A042-4570-9EC2-3902655053D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{A631A0E2-CA70-4035-87A4-81EDF170C44D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +31,16 @@ Global
 		{13802F7E-54D9-4867-B56D-2C2A4C38CAB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13802F7E-54D9-4867-B56D-2C2A4C38CAB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13802F7E-54D9-4867-B56D-2C2A4C38CAB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0FFA1EE-A042-4570-9EC2-3902655053D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0FFA1EE-A042-4570-9EC2-3902655053D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0FFA1EE-A042-4570-9EC2-3902655053D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0FFA1EE-A042-4570-9EC2-3902655053D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C0FFA1EE-A042-4570-9EC2-3902655053D7} = {A631A0E2-CA70-4035-87A4-81EDF170C44D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7EA85D7E-3B0F-46D7-B66B-F1972E4F6BF9}

@@ -204,6 +204,6 @@ paket-files/
 
 # Ignore Secret Data
 **/secretappsettings.json
-**/secretappsettings*.json
+**/secretappsettings.Development.json
 GakkoServices.Microservices.MetadataService/secretappsettings.json
 GakkoServices.Microservices.MetadataService/secretappsettings.Development.json

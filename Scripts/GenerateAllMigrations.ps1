@@ -10,5 +10,13 @@ Write-Host "Root Solution Path: $rootSolutionPath";
 # Navigate into the root solution folder
 Set-Location $rootSolutionPath;
 
+# Create the Migration Scripts Paths
+#& "$rootSolutionPath\GakkoServices.AuthServer\Scripts\GenerateMigrations.ps1"; # Example Call
+$migrationScriptPaths = @(
+    [io.path]::combine($rootSolutionPath, "GakkoServices.AuthServer", "Scripts", "GenerateMigrations.ps1")
+);
+    
 # Execute all Project Migrations
-& "$rootSolutionPath\GakkoServices.AuthServer\Scripts\GenerateMigrations.ps1"
+foreach ($path in $migrationScriptPaths) {
+    & $path;
+}

@@ -14,8 +14,8 @@ Set-Location $rootProjectPath;
 
 # Invoke Migrations
 # IdentityServer4
-$persistedGrantDbPath = $migrationsProjectPath + "\PersistedGrantDb";
-$configurationDbPath = $migrationsProjectPath + "\ConfigurationDb";
+$persistedGrantDbPath = [io.path]::combine($migrationsProjectPath, "PersistedGrantDb");
+$configurationDbPath = [io.path]::combine($migrationsProjectPath, "ConfigurationDb");
 Write-Host "IdentityServer Persisted Grant Migrations Path: $persistedGrantDbPath";
 Write-Host "IdentityServer Configuration Migrations Path: $configurationDbPath";
 
@@ -23,7 +23,7 @@ dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c Persi
 dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c ConfigurationDbContext -o $configurationDbPath
 
 # AspIdentity
-$aspIdentityDbPath = $migrationsProjectPath + "\AspIdentity";
+$aspIdentityDbPath = [io.path]::combine($migrationsProjectPath, "AspIdentity");
 Write-Host "AspIdentity Migrations Path: $aspIdentityDbPath";
 dotnet ef migrations add InitialASPIdentity --context GakkoServices.AuthServer.Data.Contexts.AspIdentityDbContext -o $aspIdentityDbPath
 

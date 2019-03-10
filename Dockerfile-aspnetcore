@@ -9,9 +9,7 @@ COPY ./${name}/${name}.csproj ./${name}.csproj
 RUN dotnet restore
 
 COPY ./${name} .
-RUN ls -l
 RUN dotnet publish -c $BUILD_ENVIRONMENT -o out
-RUN ls -l
 
 # runtime container with built application
 FROM microsoft/dotnet:aspnetcore-runtime

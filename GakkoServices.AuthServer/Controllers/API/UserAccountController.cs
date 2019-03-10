@@ -85,7 +85,7 @@ namespace GakkoServices.AuthServer.Controllers
                 await _signInManager.SignInAsync(newUser, isPersistent: false);
                 _logger.LogInformation(3, $"User: ${newUser.UserName}, created a new account with password.");
 
-                _bus.PublishAsync<UserCreateMessage>(new UserCreateMessage { Id = newUser.Id });
+                await _bus.PublishAsync<UserCreateMessage>(new UserCreateMessage { Id = newUser.Id });
 
                 // Return with a success message
                 return new ObjectResult($"User was successfully created");

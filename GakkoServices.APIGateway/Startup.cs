@@ -15,6 +15,7 @@ namespace GakkoServices.APIGateway
 {
     public class Startup
     {
+        const string SERVICE_ENDPOINT_REWRITE = "api-gateway";
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
 
@@ -32,6 +33,7 @@ namespace GakkoServices.APIGateway
                 .AddJsonFormatters()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            // Setup Authentication
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
@@ -40,11 +42,20 @@ namespace GakkoServices.APIGateway
                     options.Audience = "api1";
                 });
 
+            // Configure Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "API Gateway API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // Change the Root Path of the Service
+            app.UsePathBase($"/{SERVICE_ENDPOINT_REWRITE}");
+
+            // Configure our Error Pages
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -54,8 +65,20 @@ namespace GakkoServices.APIGateway
                 app.UseHsts();
             }
 
+            // Setup http to https redirection
             app.UseHttpsRedirection();
+
+            // Enable Swagger Middleware
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint($"/{SERVICE_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "API Gateway API");
+            });
+
+            // Use Authentication
             app.UseAuthentication();
+
+            // Setup MVC with a Default Route
             app.UseMvc();
         }
     }

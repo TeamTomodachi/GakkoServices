@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GakkoServices.Microservices.ProfileService.Data.Contexts;
+using GakkoServices.Microservices.MetadataService.Data.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,11 +12,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace GakkoServices.Microservices.ProfileService
+namespace GakkoServices.Microservices.MetadataService
 {
     public class Startup
     {
-        const string SERVICE_ENDPOINT_REWRITE = "profile";
+        const string SERVICE_ENDPOINT_REWRITE = "metadata";
 
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
@@ -40,10 +40,10 @@ namespace GakkoServices.Microservices.ProfileService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            ProfileServiceDatabaseConfiguration databaseConfig = new ProfileServiceDatabaseConfiguration(Configuration, null);
+            MetadataDatabaseConfiguration databaseConfig = new MetadataDatabaseConfiguration(Configuration, null);
 
             // Configure DBContexts
-            services.AddDbContext<ProfileServiceDbContext>(options => databaseConfig.BuildDBContext(options));
+            services.AddDbContext<MetadataServiceDbContext>(options => databaseConfig.BuildDBContext(options));
 
             // Add MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -64,7 +64,7 @@ namespace GakkoServices.Microservices.ProfileService
             // Initialize our Databases
             try
             {
-                ProfileServiceDatabaseConfiguration databaseConfig = new ProfileServiceDatabaseConfiguration(Configuration, app);
+                MetadataDatabaseConfiguration databaseConfig = new MetadataDatabaseConfiguration(Configuration, app);
                 databaseConfig.InitializeDatabase(app);
             }
             catch (Exception) { }

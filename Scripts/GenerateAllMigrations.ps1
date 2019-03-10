@@ -14,7 +14,8 @@ Set-Location $rootSolutionPath;
 #& "$rootSolutionPath\GakkoServices.AuthServer\Scripts\GenerateMigrations.ps1"; # Example Call
 $migrationScriptPaths = @(
     [io.path]::combine($rootSolutionPath, "GakkoServices.AuthServer", "Scripts", "GenerateMigrations.ps1"),
-    [io.path]::combine($rootSolutionPath, "GakkoServices.Microservices.ProfileService", "Scripts", "GenerateMigrations.ps1")
+    [io.path]::combine($rootSolutionPath, "GakkoServices.Microservices.ProfileService", "Scripts", "GenerateMigrations.ps1"),
+    [io.path]::combine($rootSolutionPath, "GakkoServices.Microservices.MetadataService", "Scripts", "GenerateMigrations.ps1")
 );
     
 # Execute all Project Migrations

@@ -99,6 +99,8 @@ namespace GakkoServices.Microservices.ProfileService
                 c.SwaggerEndpoint($"/{SERVICE_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Profile Service API");
             });
 
+            Console.WriteLine("Sleeping to wait for rabbitmq");
+            System.Threading.Thread.Sleep(5000);
             IBusClient queue = app.ApplicationServices.GetService<IBusClient>();
 
             queue.SubscribeAsync<UserCreateMessage>((user, context) =>

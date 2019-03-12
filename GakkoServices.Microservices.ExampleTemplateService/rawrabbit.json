@@ -1,0 +1,6 @@
+{
+  "Username": "guest",
+  "Password": "guest",
+  "VirtualHost": "/",
+  "HostNames": ["rabbitmq"]
+}

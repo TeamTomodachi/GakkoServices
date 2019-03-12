@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RawRabbit.vNext;
 
 namespace GakkoServices.Microservices.MetadataService
 {
@@ -47,6 +48,13 @@ namespace GakkoServices.Microservices.MetadataService
 
             // Add MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddRawRabbit(options =>
+            {
+                options.SetBasePath(Environment.ContentRootPath)
+                    .AddJsonFile("rawrabbit.json")
+                    .AddEnvironmentVariables("RawRabbit:");
+            });
 
             // Configure Swagger
             services.AddSwaggerGen(c =>

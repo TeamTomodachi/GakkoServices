@@ -65,7 +65,34 @@ services:
     networks:
       - authserver_db_network
     volumes:
-      - ./.docker_data/AuthServer:/var/lib/mysql
+      - ./.docker_data/AuthServer:/var/lib/postgresql/data
+    labels:
+      traefik.enable: false
+
+  ProfileService:
+    image: gakkoservices/profileservice
+    build:
+      context: .
+      dockerfile: Dockerfile-aspnetcore
+      args:
+        - name=GakkoServices.Microservices.ProfileService
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - internal
+      - profileservice_db_network
+    depends_on:
+      - ProfileServiceDB
+      - rabbitmq
+    labels:
+      traefik.enable: false
+
+  ProfileServiceDB:
+    image: postgres:alpine
+    networks:
+      - profileservice_db_network
+    volumes:
+      - ./.docker_data/ProfileService:/var/lib/postgresql/data
     labels:
       traefik.enable: false
 
@@ -84,4 +111,6 @@ networks:
   internal:
     external: false
   authserver_db_network:
+    external: false
+  profileservice_db_network:
     external: false

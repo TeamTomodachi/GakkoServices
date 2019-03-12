@@ -11,6 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using GakkoServices.Core.Messages;
+using RawRabbit;
+using RawRabbit.vNext;
 
 namespace GakkoServices.Microservices.ProfileService
 {
@@ -47,6 +50,13 @@ namespace GakkoServices.Microservices.ProfileService
 
             // Add MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddRawRabbit(options =>
+            {
+                options.SetBasePath(Environment.ContentRootPath)
+                    .AddJsonFile("rawrabbit.json")
+                    .AddEnvironmentVariables("RawRabbit:");
+            });
 
             // Configure Swagger
             services.AddSwaggerGen(c =>
@@ -87,6 +97,15 @@ namespace GakkoServices.Microservices.ProfileService
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint($"/{SERVICE_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Profile Service API");
+            });
+
+            IBusClient queue = app.ApplicationServices.GetService<IBusClient>();
+
+            queue.SubscribeAsync<UserCreateMessage>((user, context) =>
+            {
+                Console.WriteLine(user.Id);
+
+                return Task.CompletedTask;
             });
 
             // Setup MVC with a Default Route

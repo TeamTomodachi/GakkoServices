@@ -31,7 +31,6 @@ namespace GakkoServices.AuthServer.Controllers
         private readonly IEventService _events;
         private readonly ILogger _logger;
 
-
         public AuthenticationController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,

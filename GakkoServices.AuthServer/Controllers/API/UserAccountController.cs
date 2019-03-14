@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GakkoServices.AuthServer.Business.Services;
 using GakkoServices.AuthServer.Models;
 using GakkoServices.AuthServer.Models.UserAccount;
 using GakkoServices.Core.Messages;
@@ -21,37 +22,23 @@ namespace GakkoServices.AuthServer.Controllers
     [ApiController]
     public class UserAccountController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly IClientStore _clientStore;
-        private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly IEventService _events;
-        //private readonly IEmailSender _emailSender;
+        private readonly AccountService _accountService;
+        //private readonly UserManager<ApplicationUser> _userManager;
+        //private readonly SignInManager<ApplicationUser> _signInManager;
+        //private readonly IIdentityServerInteractionService _interaction;
+        //private readonly IClientStore _clientStore;
+        //private readonly IAuthenticationSchemeProvider _schemeProvider;
+        //private readonly IEventService _events;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
-        private readonly IBusClient _bus;
+        //private readonly IBusClient _bus;
+        ////private readonly IEmailSender _emailSender;
 
-
-        public UserAccountController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IIdentityServerInteractionService interaction,
-            IClientStore clientStore,
-            IAuthenticationSchemeProvider schemeProvider,
-            IEventService events,
-            //IEmailSender emailSender,
-            ILoggerFactory loggerFactory,
-            IBusClient bus)
+        public UserAccountController(AccountService accountService, ILoggerFactory loggerFactory)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _interaction = interaction;
-            _clientStore = clientStore;
-            _schemeProvider = schemeProvider;
-            _events = events;
-            //_emailSender = emailSender;
+            _accountService = accountService;
+            _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<UserAccountController>();
-            _bus = bus;
         }
 
         /// <summary>
@@ -62,23 +49,10 @@ namespace GakkoServices.AuthServer.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterNewUser([FromBody] UserCreate item)
         {
-            // Create the User
-            var newUser = new ApplicationUser { UserName = item.Username, Email = item.Email };
-            var result = await _userManager.CreateAsync(newUser, item.Password);
-            if (result.Succeeded)
+            var result = await _accountService.RegisterNewUser(item, true);
+            if (result.Successful)
             {
-                // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                // Send an email with this link
-                //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-
-                // Sign in the new User, log that their account was created...
-                await _signInManager.SignInAsync(newUser, isPersistent: false);
-                _logger.LogInformation(3, $"User: ${newUser.UserName}, created a new account with password.");
-
-                await _bus.PublishAsync<UserCreateMessage>(new UserCreateMessage { Id = newUser.Id });
+                _logger.LogInformation(3, $"User({result.CreatedUser.Id}): ${item.Username}, created a new account with password.");
 
                 // Return with a success message
                 return new ObjectResult($"User was successfully created");
@@ -86,7 +60,6 @@ namespace GakkoServices.AuthServer.Controllers
 
             // There was an error
             return new ObjectResult(result);
-
         }
     }
 }

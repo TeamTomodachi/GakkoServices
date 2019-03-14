@@ -25,6 +25,7 @@ using IdentityModel;
 using IdentityServer4.Hosting;
 using RawRabbit;
 using RawRabbit.vNext;
+using GakkoServices.AuthServer.Business.Services;
 
 namespace GakkoServices.AuthServer
 {
@@ -142,6 +143,9 @@ namespace GakkoServices.AuthServer
             {
                 throw new Exception("need to configure key material");
             }
+
+            // Configure Dependencies
+            services.AddScoped<AccountService, AccountService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

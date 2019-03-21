@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GakkoServices.Microservices.ProfileService.Data.Contexts;
+using GakkoServices.Microservices.ProfileService.BackgroundServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Hosting = Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -64,10 +66,12 @@ namespace GakkoServices.Microservices.ProfileService
             {
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Profile Service API", Version = "v1" });
             });
+
+            services.AddSingleton<Hosting.IHostedService, ProfileMessageHandlerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger logger)
         {
             // Change the Root Path of the Profile
             app.UsePathBase($"/{SERVICE_ENDPOINT_REWRITE}");
@@ -100,17 +104,9 @@ namespace GakkoServices.Microservices.ProfileService
                 c.SwaggerEndpoint($"/{SERVICE_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Profile Service API");
             });
 
-            Console.WriteLine("Waiting for rabbitmq...");
+            logger.LogInformation("Waiting for rabbitmq...");
             // Block until the rabbitmq panel is online
             NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
-            IBusClient queue = app.ApplicationServices.GetService<IBusClient>();
-
-            queue.SubscribeAsync<UserCreateMessage>((user, context) =>
-            {
-                Console.WriteLine(user.Id);
-
-                return Task.CompletedTask;
-            });
 
             // Setup MVC with a Default Route
             //app.UseMvcWithDefaultRoute();

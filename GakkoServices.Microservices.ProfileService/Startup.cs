@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using GakkoServices.Core.Messages;
+using GakkoServices.Core.Helpers;
 using RawRabbit;
 using RawRabbit.vNext;
 
@@ -99,8 +100,9 @@ namespace GakkoServices.Microservices.ProfileService
                 c.SwaggerEndpoint($"/{SERVICE_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Profile Service API");
             });
 
-            Console.WriteLine("Sleeping to wait for rabbitmq");
-            System.Threading.Thread.Sleep(5000);
+            Console.WriteLine("Waiting for rabbitmq...");
+            // Block until the rabbitmq panel is online
+            NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
             IBusClient queue = app.ApplicationServices.GetService<IBusClient>();
 
             queue.SubscribeAsync<UserCreateMessage>((user, context) =>

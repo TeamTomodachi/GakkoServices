@@ -19,11 +19,10 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
             _queue = queue;
         }
 
-        protected override Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
         {
             _queue.SubscribeAsync<UserCreateMessage>(CreateProfile);
             _queue.SubscribeAsync<ProfileUpdateRequestMessage>(UpdateProfile);
-            return Task.CompletedTask;
         }
 
         private async Task CreateProfile(UserCreateMessage message, MessageContext context)

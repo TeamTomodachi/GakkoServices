@@ -49,26 +49,36 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
 
         private async Task<ResultMessage> UpdateProfile(ProfileUpdateRequestMessage message, MessageContext context)
         {
-            using (var scope = _scopeFactory.CreateScope())
+            try
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<ProfileServiceDbContext>();
-                var profile = await dbContext.FindAsync<PogoProfile>(message.Id);
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<ProfileServiceDbContext>();
+                    var profile = await dbContext.FindAsync<PogoProfile>(message.Id);
 
-                if (message.PogoLevel.HasValue) {
-                    profile.PogoLevel = message.PogoLevel.Value;
+                    if (message.PogoLevel.HasValue) {
+                        profile.PogoLevel = message.PogoLevel.Value;
+                    }
+                    if (message.PogoTeamId.HasValue) {
+                        profile.PogoTeamId = message.PogoTeamId.Value;
+                    }
+                    if (message.PogoUsername != null) {
+                        profile.PogoUsername = message.PogoUsername;
+                    }
+                    await dbContext.SaveChangesAsync();
                 }
-                if (message.PogoTeamId.HasValue) {
-                    profile.PogoTeamId = message.PogoTeamId.Value;
-                }
-                if (message.PogoUsername != null) {
-                    profile.PogoUsername = message.PogoUsername;
-                }
-                await dbContext.SaveChangesAsync();
+
+                return new ResultMessage {
+                    status = ResultMessage.Status.Ok,
+                };
             }
-
-            return new ResultMessage {
-                status = ResultMessage.Status.Ok,
-            };
+            catch (Exception e)
+            {
+                return new ResultMessage {
+                    status = ResultMessage.Status.Error,
+                    data = e,
+                };
+            }
         }
     }
 }

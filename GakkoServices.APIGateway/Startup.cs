@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GakkoServices.Core.Services;
 using GraphiQl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -51,6 +52,7 @@ namespace GakkoServices.APIGateway
 
             // Additional Configuration
             services.AddHttpContextAccessor();
+            services.AddSingleton<ContextServiceLocator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -26,6 +26,7 @@ using IdentityServer4.Hosting;
 using RawRabbit;
 using RawRabbit.vNext;
 using GakkoServices.AuthServer.Business.Services;
+using GakkoServices.Core.Services;
 
 namespace GakkoServices.AuthServer
 {
@@ -146,6 +147,10 @@ namespace GakkoServices.AuthServer
 
             // Configure Dependencies
             services.AddScoped<AccountService, AccountService>();
+
+            // Additional Configuration
+            services.AddHttpContextAccessor();
+            services.AddSingleton<ContextServiceLocator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

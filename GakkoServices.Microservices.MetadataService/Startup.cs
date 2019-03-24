@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GakkoServices.Core.Services;
 using GakkoServices.Microservices.MetadataService.Data.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -53,6 +54,10 @@ namespace GakkoServices.Microservices.MetadataService
             {
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Profile Service API", Version = "v1" });
             });
+
+            // Additional Configuration
+            services.AddHttpContextAccessor();
+            services.AddSingleton<ContextServiceLocator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

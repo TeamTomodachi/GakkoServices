@@ -17,6 +17,7 @@ using GakkoServices.Core.Messages;
 using GakkoServices.Core.Helpers;
 using RawRabbit;
 using RawRabbit.vNext;
+using GakkoServices.Core.Services;
 
 namespace GakkoServices.Microservices.ProfileService
 {
@@ -67,6 +68,9 @@ namespace GakkoServices.Microservices.ProfileService
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Profile Service API", Version = "v1" });
             });
 
+            // Additional Configuration
+            services.AddHttpContextAccessor();
+            services.AddSingleton<ContextServiceLocator>();
             services.AddSingleton<Hosting.IHostedService, ProfileMessageHandlerService>();
         }
 

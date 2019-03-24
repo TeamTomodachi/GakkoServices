@@ -34,6 +34,7 @@ namespace GakkoServices.APIGateway
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvcCore()
+                .AddApiExplorer()
                 .AddAuthorization()
                 .AddJsonFormatters()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -90,7 +91,7 @@ namespace GakkoServices.APIGateway
             });
 
             // Enable GraphiQL
-            app.UseGraphiQl($"/{SERVICE_ENDPOINT_REWRITE}/graphiql", $"/{SERVICE_ENDPOINT_REWRITE}/api/graphql");
+            app.UseGraphiQl($"/graphiql", $"/{SERVICE_ENDPOINT_REWRITE}/api/graphql");
 
             // Use Authentication
             app.UseAuthentication();

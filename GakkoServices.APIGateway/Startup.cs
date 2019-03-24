@@ -80,9 +80,6 @@ namespace GakkoServices.APIGateway
                 app.UseHsts();
             }
 
-            // Setup http to https redirection
-            app.UseHttpsRedirection();
-
             // Enable Swagger Middleware
             app.UseSwagger();
             app.UseSwaggerUI(c =>

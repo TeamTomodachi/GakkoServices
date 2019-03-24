@@ -177,9 +177,6 @@ namespace GakkoServices.AuthServer
                 app.UseHsts();
             }
 
-            // Setup http to https redirection
-            app.UseHttpsRedirection();
-
             // Setup our pipeline to use Static Files...
             app.UseStaticFiles();
 

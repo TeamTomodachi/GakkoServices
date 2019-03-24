@@ -10,7 +10,12 @@ namespace GakkoServices.Microservices.MetadataService.Models
     {
         [Key]
         public Guid Id { get; set; }
+
+        [Required]
         public int PokedexNumber { get; set; }
-        public string PokemonName { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

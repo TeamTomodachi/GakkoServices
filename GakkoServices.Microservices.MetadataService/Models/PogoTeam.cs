@@ -10,7 +10,12 @@ namespace GakkoServices.Microservices.MetadataService.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public string TeamName { get; set; }
-        public string TeamColor { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public string Color { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

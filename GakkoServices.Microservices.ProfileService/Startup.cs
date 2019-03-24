@@ -27,11 +27,13 @@ namespace GakkoServices.Microservices.ProfileService
 
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
+        private readonly ILogger _logger;
 
-        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment, ILogger<Startup> logger)
         {
             Configuration = configuration;
             Environment = environment;
+            _logger = logger;
 
             // Setup Configuraiton
             var builder = new ConfigurationBuilder()
@@ -75,7 +77,7 @@ namespace GakkoServices.Microservices.ProfileService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger logger)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             // Change the Root Path of the Profile
             app.UsePathBase($"/{SERVICE_ENDPOINT_REWRITE}");
@@ -108,9 +110,10 @@ namespace GakkoServices.Microservices.ProfileService
                 c.SwaggerEndpoint($"/{SERVICE_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Profile Service API");
             });
 
-            logger.LogInformation("Waiting for rabbitmq...");
+            _logger.LogInformation("Waiting for rabbitmq...");
             // Block until the rabbitmq panel is online
             NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
+            _logger.LogInformation("rabbitmq is ready");
 
             // Setup MVC with a Default Route
             //app.UseMvcWithDefaultRoute();

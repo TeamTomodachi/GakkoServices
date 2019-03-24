@@ -36,7 +36,7 @@ services:
       - traefik
     labels:
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
-      traefik.frontend.rule: PathPrefixStrip:/api
+      traefik.frontend.rule: PathPrefixStrip:/api-gateway
       traefik.port: 80
 
   AuthServer:

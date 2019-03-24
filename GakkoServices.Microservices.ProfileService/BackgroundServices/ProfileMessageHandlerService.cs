@@ -1,22 +1,24 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using GakkoServices.Microservices.ProfileService.Data.Contexts;
 using GakkoServices.Core.Messages;
 using RawRabbit;
 using RawRabbit.Context;
 using GakkoServices.Microservices.ProfileService.Models;
+using GakkoServices.Core.Services;
 
 namespace GakkoServices.Microservices.ProfileService.BackgroundServices
 {
     public class ProfileMessageHandlerService: BackgroundService
     {
-        private ProfileServiceDbContext _context;
+        private IServiceScopeFactory _scopeFactory;
         private IBusClient _queue;
 
-        public ProfileMessageHandlerService(ProfileServiceDbContext context, IBusClient queue)
+        public ProfileMessageHandlerService(IServiceScopeFactory scopeFactory, IBusClient queue)
         {
-            _context = context;
+            _scopeFactory = scopeFactory;
             _queue = queue;
         }
 
@@ -37,24 +39,32 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 PogoLevel = 1,
             };
 
-            await _context.AddAsync(profile);
-            await _context.SaveChangesAsync();
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ProfileServiceDbContext>();
+                await dbContext.AddAsync(profile);
+                await dbContext.SaveChangesAsync();
+            }
         }
 
         private async Task<ResultMessage> UpdateProfile(ProfileUpdateRequestMessage message, MessageContext context)
         {
-            var profile = await _context.FindAsync<PogoProfile>(message.Id);
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ProfileServiceDbContext>();
+                var profile = await dbContext.FindAsync<PogoProfile>(message.Id);
 
-            if (message.PogoLevel.HasValue) {
-                profile.PogoLevel = message.PogoLevel.Value;
+                if (message.PogoLevel.HasValue) {
+                    profile.PogoLevel = message.PogoLevel.Value;
+                }
+                if (message.PogoTeamId.HasValue) {
+                    profile.PogoTeamId = message.PogoTeamId.Value;
+                }
+                if (message.PogoUsername != null) {
+                    profile.PogoUsername = message.PogoUsername;
+                }
+                await dbContext.SaveChangesAsync();
             }
-            if (message.PogoTeamId.HasValue) {
-                profile.PogoTeamId = message.PogoTeamId.Value;
-            }
-            if (message.PogoUsername != null) {
-                profile.PogoUsername = message.PogoUsername;
-            }
-            await _context.SaveChangesAsync();
 
             return new ResultMessage {
                 status = ResultMessage.Status.Ok,

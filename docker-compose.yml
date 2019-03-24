@@ -13,6 +13,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     hostname: rabbitmq
@@ -22,6 +23,7 @@ services:
       - ./.docker_data/rabbitmq:/var/lib/rabbitmq/mnesia/rabbit@rabbitmq
     ports:
       - 15672:15672 # management panel
+
 
   APIGateway:
     image: gakkoservices/apigateway
@@ -38,6 +40,7 @@ services:
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
       traefik.frontend.rule: PathPrefixStrip:/api-gateway
       traefik.port: 80
+
 
   AuthServer:
     image: gakkoservices/authserver
@@ -60,14 +63,16 @@ services:
       traefik.frontend.rule: PathPrefixStrip:/auth
       traefik.port: 80
 
+
   AuthServerDB:
     image: postgres:alpine
     networks:
       - authserver_db_network
     volumes:
-      - ./.docker_data/AuthServer:/var/lib/postgresql/data
+      - authserverdb:/var/lib/postgresql/data
     labels:
       traefik.enable: false
+
 
   ProfileService:
     image: gakkoservices/profileservice
@@ -87,19 +92,22 @@ services:
     labels:
       traefik.enable: false
 
+
   ProfileServiceDB:
     image: postgres:alpine
     networks:
       - profileservice_db_network
     volumes:
-      - ./.docker_data/ProfileService:/var/lib/postgresql/data
+      - profileservicedb:/var/lib/postgresql/data
     labels:
       traefik.enable: false
+
 
   adminer:
     image: adminer
     networks:
       - authserver_db_network
+      - profileservice_db_network
     ports:
       - 8081:8080
     labels:
@@ -114,3 +122,7 @@ networks:
     external: false
   profileservice_db_network:
     external: false
+
+volumes:
+  authserverdb:
+  profileservicedb:

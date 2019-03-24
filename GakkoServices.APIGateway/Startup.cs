@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GakkoServices.APIGateway.Models.GraphQL;
 using GakkoServices.Core.Services;
 using GraphiQl;
+using GraphQL;
+using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -53,6 +56,11 @@ namespace GakkoServices.APIGateway
             // Additional Configuration
             services.AddHttpContextAccessor();
             services.AddSingleton<ContextServiceLocator>();
+            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+
+            // Build the GraphQL Schema
+            var sp = services.BuildServiceProvider();
+            services.AddSingleton<ISchema>(new APIGatewaySchema(new FuncDependencyResolver(type => sp.GetService(type))));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

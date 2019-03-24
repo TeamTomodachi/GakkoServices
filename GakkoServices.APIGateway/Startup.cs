@@ -88,7 +88,7 @@ namespace GakkoServices.APIGateway
             });
 
             // Enable GraphiQL
-            app.UseGraphiQl($"/graphiql", $"/{SERVICE_ENDPOINT_REWRITE}/api/graphql");
+            app.UseGraphiQl($"/{SERVICE_ENDPOINT_REWRITE}/graphiql", $"/{SERVICE_ENDPOINT_REWRITE}/api/graphql");
 
             // Use Authentication
             app.UseAuthentication();

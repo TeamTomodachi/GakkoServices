@@ -23,7 +23,6 @@ namespace GakkoServices.AuthServer.Controllers
     public class UserAccountController : ControllerBase
     {
         private readonly AccountService _accountService;
-        //private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
 

@@ -32,4 +32,10 @@
     <PackageReference Include="RawRabbit.vNext" Version="1.10.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Account\Register.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
 </Project>

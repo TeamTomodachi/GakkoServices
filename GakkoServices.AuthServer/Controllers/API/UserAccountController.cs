@@ -24,15 +24,8 @@ namespace GakkoServices.AuthServer.Controllers
     {
         private readonly AccountService _accountService;
         //private readonly UserManager<ApplicationUser> _userManager;
-        //private readonly SignInManager<ApplicationUser> _signInManager;
-        //private readonly IIdentityServerInteractionService _interaction;
-        //private readonly IClientStore _clientStore;
-        //private readonly IAuthenticationSchemeProvider _schemeProvider;
-        //private readonly IEventService _events;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
-        //private readonly IBusClient _bus;
-        ////private readonly IEmailSender _emailSender;
 
         public UserAccountController(AccountService accountService, ILoggerFactory loggerFactory)
         {

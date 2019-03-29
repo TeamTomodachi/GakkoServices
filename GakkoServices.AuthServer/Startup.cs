@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using IdentityServer4;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.DataProtection;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using GakkoServices.AuthServer.Data.Contexts;
@@ -81,7 +83,7 @@ namespace GakkoServices.AuthServer
             var builder = services.AddIdentityServer(options =>
             {
                 options.Discovery.ShowTokenEndpointAuthenticationMethods = true;
-                //options.Authentication.CookieAuthenticationScheme = "/auth";
+                //options.Authentication.CookieAuthenticationScheme = "/";
                 options.Discovery.CustomEntries.Add("UserAccount", "~/api/UserAccount");
             }).AddAspNetIdentity<ApplicationUser>()
             .AddConfigurationStore(options => // this adds the config data from DB (clients, resources)
@@ -114,7 +116,13 @@ namespace GakkoServices.AuthServer
             //     });
 
             // Add in Authentication Providers
-            services.AddAuthentication()
+            services.AddAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme)
+                .AddCookie(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
+                {
+                    options.Cookie.Path = "/";
+                    options.LoginPath = "/auth/account/login";
+                    options.LogoutPath = "/auth/account/logout";
+                })
                 .AddGoogle("Google", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
@@ -133,6 +141,12 @@ namespace GakkoServices.AuthServer
             //    options.Audience = Configuration["Auth0:Audience"];
             //    options.RequireHttpsMetadata = false;
             //});
+
+            var keysDir = Path.Combine(Directory.GetCurrentDirectory(), "/keys");
+            _logger.LogInformation("Persisting dataprotection keys to {}", keysDir);
+            services.AddDataProtection()
+                .SetApplicationName("authserver")
+                .PersistKeysToFileSystem(new System.IO.DirectoryInfo(keysDir));
 
             services.AddRawRabbit(options =>
             {

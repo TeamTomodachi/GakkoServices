@@ -60,7 +60,7 @@ services:
       - rabbitmq
     labels:
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
-      traefik.frontend.rule: PathPrefixStrip:/auth
+      traefik.frontend.rule: PathPrefix:/auth
       traefik.port: 80
 
 

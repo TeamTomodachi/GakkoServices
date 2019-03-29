@@ -48,6 +48,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
             var profile = new PogoProfile
             {
                 Id = message.Id,
+                UserAccountId = message.Id,
                 PogoUsername = "user123",
                 PogoLevel = 1,
             };

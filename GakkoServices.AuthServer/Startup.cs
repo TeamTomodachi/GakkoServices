@@ -36,11 +36,13 @@ namespace GakkoServices.AuthServer
 
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
+        private readonly ILogger _logger;
 
-        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment, ILogger<Startup> logger)
         {
             Configuration = configuration;
             Environment = environment;
+            _logger = logger;
 
             // Setup Configuraiton
             var builder = new ConfigurationBuilder()
@@ -165,7 +167,10 @@ namespace GakkoServices.AuthServer
                 AuthServerDatabaseConfiguration databaseConfig = new AuthServerDatabaseConfiguration(Configuration, app);
                 databaseConfig.InitializeDatabase(app);
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                _logger.LogWarning("Caught exception when initializing DB: {Exception}", e);
+            }
 
             // Configure our Error Pages
             if (env.IsDevelopment())

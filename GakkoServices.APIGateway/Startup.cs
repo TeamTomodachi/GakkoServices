@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GakkoServices.APIGateway.Models.GraphQL;
 using GakkoServices.Core.Services;
+using GakkoServices.Core.Helpers;
 using GraphiQl;
 using GraphQL;
 using GraphQL.Types;
@@ -15,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RawRabbit;
+using RawRabbit.vNext;
 
 namespace GakkoServices.APIGateway
 {
@@ -23,11 +26,13 @@ namespace GakkoServices.APIGateway
         const string SERVICE_ENDPOINT_REWRITE = "api-gateway";
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
+        private readonly ILogger _logger;
 
-        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment, ILogger<Startup> logger)
         {
             Configuration = configuration;
             Environment = environment;
+            _logger = logger;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -54,10 +59,22 @@ namespace GakkoServices.APIGateway
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "API Gateway API", Version = "v1" });
             });
 
+            services.AddRawRabbit(options =>
+            {
+                options.SetBasePath(Environment.ContentRootPath)
+                    .AddJsonFile("rawrabbit.json")
+                    .AddEnvironmentVariables("RawRabbit:");
+            });
+
+            _logger.LogInformation("Waiting for rabbitmq...");
+            // Block until the rabbitmq panel is online
+            NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
+            _logger.LogInformation("rabbitmq is ready");
+
             // Additional Configuration
             services.AddHttpContextAccessor();
             services.AddSingleton<ContextServiceLocator>();
-            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+            GraphQLConfiguration.Configure(services);
 
             // Build the GraphQL Schema
             var sp = services.BuildServiceProvider();
@@ -88,7 +105,7 @@ namespace GakkoServices.APIGateway
             });
 
             // Enable GraphiQL
-            app.UseGraphiQl($"/{SERVICE_ENDPOINT_REWRITE}/graphiql", $"/{SERVICE_ENDPOINT_REWRITE}/api/graphql");
+            app.UseGraphiQl($"/graphiql", $"/{SERVICE_ENDPOINT_REWRITE}/api/graphql");
 
             // Use Authentication
             app.UseAuthentication();

@@ -1,0 +1,8 @@
+{
+  "Username": "guest",
+  "Password": "guest",
+  "VirtualHost": "/",
+  "HostNames": ["rabbitmq"],
+  "RecoveryInterval": "00:00:10",
+  "AutomaticRecovery": true
+}

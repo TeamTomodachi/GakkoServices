@@ -38,6 +38,7 @@ namespace IdentityServer4.Quickstart.UI
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
+        #region Login
         /// <summary>
         /// Entry point into the login workflow
         /// </summary>
@@ -138,8 +139,9 @@ namespace IdentityServer4.Quickstart.UI
             var vm = await BuildLoginViewModelAsync(model);
             return View(vm);
         }
+        #endregion
 
-
+        #region Logout
         /// <summary>
         /// Show logout page
         /// </summary>
@@ -192,7 +194,9 @@ namespace IdentityServer4.Quickstart.UI
 
             return View("LoggedOut", vm);
         }
+        #endregion
 
+        #region Register
         //
         // GET: /Account/Register
         [HttpGet]
@@ -200,13 +204,17 @@ namespace IdentityServer4.Quickstart.UI
         public IActionResult Register(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+
+            var vm = new RegisterViewModel()
+            {
+                ReturnUrl = returnUrl
+            };
+            return View(vm);
         }
 
         //
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
@@ -231,6 +239,7 @@ namespace IdentityServer4.Quickstart.UI
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+        #endregion
 
         /*****************************************/
         /* helper APIs for the AccountController */

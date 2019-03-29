@@ -22,18 +22,17 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
             _queue = queue;
         }
 
-        protected override async Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
+        protected override Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
         {
-            await Task.Run(() =>
-            {
-                _queue.SubscribeAsync<UserCreateMessage>(CreateProfile);
-                _queue.RespondAsync<ProfileUpdateRequestMessage, ResultMessage>(UpdateProfile);
-            });
+            _queue.SubscribeAsync<UserCreateMessage>(CreateProfile);
+            _queue.RespondAsync<ProfileUpdateRequestMessage, ResultMessage>(UpdateProfile);
+            return Task.CompletedTask;
         }
 
         private async Task CreateProfile(UserCreateMessage message, MessageContext context)
         {
-            var profile = new PogoProfile {
+            var profile = new PogoProfile
+            {
                 Id = message.Id,
                 PogoUsername = "user123",
                 PogoLevel = 1,

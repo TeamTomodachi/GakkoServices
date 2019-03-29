@@ -215,7 +215,7 @@ namespace IdentityServer4.Quickstart.UI
             {
                 // Create the UserCreate Model
                 UserCreate userCreate = new UserCreate();
-                userCreate.Username = model.Email;
+                userCreate.Username = model.Username;
                 userCreate.Email = model.Email;
                 userCreate.Password = model.Password;
 

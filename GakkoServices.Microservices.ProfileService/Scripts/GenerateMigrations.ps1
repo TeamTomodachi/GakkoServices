@@ -9,6 +9,9 @@ Write-Host "Script Path: $scriptPath";
 Write-Host "Root Project Path: $rootProjectPath";
 Write-Host "Migrations Path: $migrationsProjectPath";
 
+# Create folder if not exists
+New-Item -ItemType Directory -Force -Path $migrationsProjectPath
+
 # Navigate into the root project folder
 Set-Location $rootProjectPath;
 

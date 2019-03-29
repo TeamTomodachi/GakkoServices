@@ -24,8 +24,21 @@ namespace GakkoServices.APIGateway.Controllers.API
             m_documentExecuter = documentExecuter;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] GraphQLQuery query)
+        {
+            if (query == null) { throw new ArgumentNullException(nameof(query)); }
+            return await PreformQuery(query);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GraphQLQuery query)
+        {
+            if (query == null) { throw new ArgumentNullException(nameof(query)); }
+            return await PreformQuery(query);
+        }
+
+        private async Task<IActionResult> PreformQuery(GraphQLQuery query)
         {
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             var inputs = query.Variables.ToInputs();

@@ -53,6 +53,19 @@ namespace GakkoServices.APIGateway
                     options.Audience = "api1";
                 });
 
+            // Add Cors
+            // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
+            services.AddCors(options =>
+            {
+                options.AddPolicy("default", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             // Configure Swagger
             services.AddSwaggerGen(c =>
             {

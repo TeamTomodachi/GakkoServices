@@ -149,6 +149,19 @@ namespace GakkoServices.AuthServer
                 throw new Exception("need to configure key material");
             }
 
+            // Add Cors
+            // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
+            services.AddCors(options =>
+            {
+                options.AddPolicy("default", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin() 
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             // Configure Dependencies
             services.AddScoped<AccountService, AccountService>();
 

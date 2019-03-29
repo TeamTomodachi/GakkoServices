@@ -25,8 +25,22 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
         protected override Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
         {
             _queue.SubscribeAsync<UserCreateMessage>(CreateProfile);
+            _queue.RespondAsync<ProfileRequestMessage, ResultMessage>(GetProfile);
             _queue.RespondAsync<ProfileUpdateRequestMessage, ResultMessage>(UpdateProfile);
             return Task.CompletedTask;
+        }
+
+        private async Task<ResultMessage> GetProfile(ProfileRequestMessage message, MessageContext context)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ProfileServiceDbContext>();
+
+                return new ResultMessage {
+                    status = ResultMessage.Status.Ok,
+                    data = await dbContext.PogoProfiles.FindAsync(message.Id),
+                };
+            }
         }
 
         private async Task CreateProfile(UserCreateMessage message, MessageContext context)

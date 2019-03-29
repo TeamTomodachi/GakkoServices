@@ -11,6 +11,8 @@ namespace IdentityServer4.Quickstart.UI
 {
     public class RegisterViewModel
     {
+        public string ReturnUrl { get; set; }
+
         [Required]
         public string Username { get; set; }
 

@@ -39,6 +39,30 @@ namespace GakkoServices.Microservices.MetadataService
                     context.SaveChanges();
                 }
 
+                // Add Pokemon Types
+                if (!context.PogoPokemonTypes.Any())
+                {
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Normal" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Fighting" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Flying" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Poison" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Ground" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Rock" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Bug" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Ghost" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Steel" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Fire" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Water" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Grass" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Electric" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Psychic" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Ice" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Dragon" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Fairy" });
+                    context.PogoPokemonTypes.Add(new Models.PogoPokemonType() { Id = Guid.NewGuid(), Name = "Dark" });
+                    context.SaveChanges();
+                }
+
                 // Add some Pokemon
                 if (!context.PogoPokemon.Any())
                 {

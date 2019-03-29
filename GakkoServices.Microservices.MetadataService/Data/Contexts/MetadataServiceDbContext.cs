@@ -20,6 +20,7 @@ namespace GakkoServices.Microservices.MetadataService.Data.Contexts
 
         public DbSet<PogoTeam> PogoTeams { get; set; }
         public DbSet<PogoPokemon> PogoPokemon { get; set; }
+        public DbSet<PogoPokemonType> PogoPokemonTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

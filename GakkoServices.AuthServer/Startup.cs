@@ -80,6 +80,8 @@ namespace GakkoServices.AuthServer
 
             var builder = services.AddIdentityServer(options =>
             {
+                options.Discovery.ShowTokenEndpointAuthenticationMethods = true;
+                //options.Authentication.CookieAuthenticationScheme = "/auth";
                 options.Discovery.CustomEntries.Add("UserAccount", "~/api/UserAccount");
             }).AddAspNetIdentity<ApplicationUser>()
             .AddConfigurationStore(options => // this adds the config data from DB (clients, resources)

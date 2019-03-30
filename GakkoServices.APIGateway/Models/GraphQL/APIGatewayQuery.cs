@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using GakkoServices.Core.Services;
 using GakkoServices.Core.Messages;
+using GakkoServices.Core.Models;
 using RawRabbit;
 
 namespace GakkoServices.APIGateway.Models.GraphQL
@@ -13,14 +14,21 @@ namespace GakkoServices.APIGateway.Models.GraphQL
         {
             Field<ProfileType>(
                 "profile",
-                arguments: new QueryArguments(new QueryArgument<GuidGraphType> { Name = "id" }),
+                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
                 resolve: context => {
                     var responseTask = queue.RequestAsync<ProfileRequestMessage, ResultMessage>(
                         new ProfileRequestMessage {
-                            Id = context.GetArgument<Guid>("id"),
+                            Id = Guid.Parse(context.GetArgument<string>("id")),
                         }
                     );
-                    return responseTask.Result.data;
+                    var profileData = responseTask.Result.data as ProfileData;
+                    return new Profile {
+                        Username = profileData.Username,
+                        TrainerCode = profileData.TrainerCode,
+                        Level = profileData.Level,
+                        Team = null,
+                        Pokemon = null,
+                    };
                 }
             );
         }

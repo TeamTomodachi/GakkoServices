@@ -116,13 +116,14 @@ namespace GakkoServices.AuthServer
             //     });
 
             // Add in Authentication Providers
-            services.AddAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme)
-                .AddCookie(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
-                {
-                    options.Cookie.Path = "/";
-                    options.LoginPath = "/auth/account/login";
-                    options.LogoutPath = "/auth/account/logout";
-                })
+            // services.AddAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme)
+            //     .AddCookie(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
+            //     {
+            //         options.Cookie.Path = "/";
+            //         options.LoginPath = "/auth/account/login";
+            //         options.LogoutPath = "/auth/account/logout";
+            //     })
+            services.AddAuthentication()
                 .AddGoogle("Google", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;

@@ -8,6 +8,7 @@ using RawRabbit;
 using RawRabbit.Context;
 using GakkoServices.Microservices.ProfileService.Models;
 using GakkoServices.Core.Services;
+using GakkoServices.Core.Models;
 
 namespace GakkoServices.Microservices.ProfileService.BackgroundServices
 {
@@ -35,10 +36,16 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
             using (var scope = _scopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ProfileServiceDbContext>();
+                var profile = await dbContext.PogoProfiles.FindAsync(message.Id);
 
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,
-                    data = await dbContext.PogoProfiles.FindAsync(message.Id),
+                    data = new ProfileData {
+                        Id = profile.Id,
+                        Username = profile.PogoUsername,
+                        TrainerCode = profile.PogoTrainerCode,
+                        Level = profile.PogoLevel,
+                    },
                 };
             }
         }
@@ -49,8 +56,9 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
             {
                 Id = message.Id,
                 UserAccountId = message.Id,
-                PogoUsername = "user123",
+                PogoUsername = "anonymous",
                 PogoLevel = 1,
+                PogoTrainerCode = "0000 0000 0000",
             };
 
             using (var scope = _scopeFactory.CreateScope())

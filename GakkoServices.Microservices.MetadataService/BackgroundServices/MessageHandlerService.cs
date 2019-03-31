@@ -106,7 +106,7 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
                 else if (message.Name != null)
                 {
                     pokemon = await dbContext.PogoPokemon
-                        .Where(p => p.Name == message.Name)
+                        .Where(p => p.Name.ToLower() == message.Name.ToLower())
                         .FirstAsync();
                     if (pokemon == null)
                     {

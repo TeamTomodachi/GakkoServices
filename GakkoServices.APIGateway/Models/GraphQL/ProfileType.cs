@@ -16,6 +16,57 @@ namespace GakkoServices.APIGateway.Models.GraphQL
             Field(x => x.Username);
             Field(x => x.Level);
             Field(x => x.TrainerCode);
+            Field<PokemonType>(
+                "featuredPokemon1",
+                resolve: context => {
+                    var responseTask = queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
+                        new PokemonRequestMessage {
+                            Id = context.Source.FeaturedPokemon1,
+                        }
+                    );
+                    var pokemonData = responseTask.Result.data as PokemonData;
+                    return new Pokemon {
+                        Id = pokemonData.Id,
+                        Name = pokemonData.Name,
+                        PokedexNumber = pokemonData.PokedexNumber,
+                        ImageUrl = pokemonData.ImageUrl,
+                    };
+                }
+            );
+            Field<PokemonType>(
+                "featuredPokemon2",
+                resolve: context => {
+                    var responseTask = queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
+                        new PokemonRequestMessage {
+                            Id = context.Source.FeaturedPokemon2,
+                        }
+                    );
+                    var pokemonData = responseTask.Result.data as PokemonData;
+                    return new Pokemon {
+                        Id = pokemonData.Id,
+                        Name = pokemonData.Name,
+                        PokedexNumber = pokemonData.PokedexNumber,
+                        ImageUrl = pokemonData.ImageUrl,
+                    };
+                }
+            );
+            Field<PokemonType>(
+                "featuredPokemon3",
+                resolve: context => {
+                    var responseTask = queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
+                        new PokemonRequestMessage {
+                            Id = context.Source.FeaturedPokemon3,
+                        }
+                    );
+                    var pokemonData = responseTask.Result.data as PokemonData;
+                    return new Pokemon {
+                        Id = pokemonData.Id,
+                        Name = pokemonData.Name,
+                        PokedexNumber = pokemonData.PokedexNumber,
+                        ImageUrl = pokemonData.ImageUrl,
+                    };
+                }
+            );
             Field<StringGraphType>("teamId", resolve: context => context.Source.TeamId.ToString());
             Field<TeamType>(
                 "team",

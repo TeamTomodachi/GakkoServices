@@ -10,6 +10,8 @@ namespace GakkoServices.APIGateway.Models
         public string TrainerCode { get; set; }
         public int Level { get; set; }
         public Guid TeamId { get; set; }
-        public List<Pokemon> Pokemon { get; set; }
+        public Guid FeaturedPokemon1 { get; set; }
+        public Guid FeaturedPokemon2 { get; set; }
+        public Guid FeaturedPokemon3 { get; set; }
     }
 }

@@ -29,7 +29,9 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         TrainerCode = profileData.TrainerCode,
                         Level = profileData.Level,
                         TeamId = profileData.TeamId,
-                        Pokemon = null,
+                        FeaturedPokemon1 = profileData.FeaturedPokemon1,
+                        FeaturedPokemon2 = profileData.FeaturedPokemon2,
+                        FeaturedPokemon3 = profileData.FeaturedPokemon3,
                     };
                 }
             );

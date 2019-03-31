@@ -47,5 +47,24 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
                 };
             }
         }
+
+        private async Task<ResultMessage> GetPokemon(PokemonRequestMessage message, MessageContext context)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
+                PogoPokemon pokemon = await dbContext.PogoPokemon.FindAsync(message.Id);
+
+                return new ResultMessage {
+                    status = ResultMessage.Status.Ok,
+                    data = new PokemonData {
+                        Id = pokemon.Id,
+                        Name = pokemon.Name,
+                        PokedexNumber = pokemon.PokedexNumber,
+                        ImageUrl = pokemon.ImageUrl,
+                    },
+                };
+            }
+        }
     }
 }

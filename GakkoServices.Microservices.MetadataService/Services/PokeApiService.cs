@@ -41,9 +41,7 @@ namespace GakkoServices.Microservices.MetadataService.Services
             pogoPokemon.Id = Guid.NewGuid();
             pogoPokemon.ImageUrl = pokeApiPokemon.Sprites.FrontMale != null ? pokeApiPokemon.Sprites.FrontMale : pokeApiPokemon.Sprites.FrontFemale;
             pogoPokemon.Name = pokeApiPokemon.Name;
-            pogoPokemon.PokedexNumber = pokeApiPokemonSpecies.PokedexNumbers
-                .FirstOrDefault()
-                    .EntryNumber;
+            pogoPokemon.PokedexNumber = pokeApiPokemon.ID;
             return pogoPokemon;
         }
 

@@ -33,9 +33,9 @@ namespace GakkoServices.Microservices.MetadataService
                 // Add the default Teams
                 if (!context.PogoTeams.Any())
                 {
-                    context.PogoTeams.Add(new Models.PogoTeam() { Id = Guid.Parse("5523827B-7266-4EE7-8F6D-F4B43C0060E2"), Name = "Mystic", Color = "Blue" });
-                    context.PogoTeams.Add(new Models.PogoTeam() { Id = Guid.Parse("4FD050C0-0079-4552-B9E9-F37F2FFA9DAE"), Name = "Valor", Color = "Red" });
-                    context.PogoTeams.Add(new Models.PogoTeam() { Id = Guid.Parse("D1681284-2A72-47AB-85C3-FE5CD642FBA9"), Name = "Instinct", Color = "Yellow" });
+                    context.PogoTeams.Add(new Models.PogoTeam() { Id = Guid.Parse("5523827B-7266-4EE7-8F6D-F4B43C0060E2"), Name = "Mystic", Color = "Blue", ImageUrl = "" });
+                    context.PogoTeams.Add(new Models.PogoTeam() { Id = Guid.Parse("4FD050C0-0079-4552-B9E9-F37F2FFA9DAE"), Name = "Valor", Color = "Red", ImageUrl = "" });
+                    context.PogoTeams.Add(new Models.PogoTeam() { Id = Guid.Parse("D1681284-2A72-47AB-85C3-FE5CD642FBA9"), Name = "Instinct", Color = "Yellow", ImageUrl = "" });
                     context.SaveChanges();
                 }
 

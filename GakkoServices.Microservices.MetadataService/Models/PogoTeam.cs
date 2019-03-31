@@ -16,6 +16,6 @@ namespace GakkoServices.Microservices.MetadataService.Models
 
         [Required]
         public string Color { get; set; }
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = "";
     }
 }

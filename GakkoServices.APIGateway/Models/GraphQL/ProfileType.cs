@@ -1,7 +1,10 @@
+using System;
 using GraphQL.Types;
 using GakkoServices.Core.Services;
 using GakkoServices.Core.Messages;
 using GakkoServices.Core.Models;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using RawRabbit;
 
 namespace GakkoServices.APIGateway.Models.GraphQL
@@ -17,11 +20,12 @@ namespace GakkoServices.APIGateway.Models.GraphQL
             Field(x => x.Level);
             Field(x => x.TrainerCode);
             Field<PokemonType>(
-                "featuredPokemon1",
+                "featuredPokemon",
+                arguments: new QueryArguments(new QueryArgument<IntGraphType> { Name = "n" }),
                 resolve: context => {
                     var responseTask = queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
                         new PokemonRequestMessage {
-                            Id = context.Source.FeaturedPokemon1,
+                            Id = context.Source.FeaturedPokemon[context.GetArgument<int>("n")],
                         }
                     );
                     var pokemonData = responseTask.Result.data as PokemonData;
@@ -33,38 +37,32 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                     };
                 }
             );
-            Field<PokemonType>(
-                "featuredPokemon2",
+            Field<ListGraphType<PokemonType>>(
+                "featuredPokemen",
                 resolve: context => {
-                    var responseTask = queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
-                        new PokemonRequestMessage {
-                            Id = context.Source.FeaturedPokemon2,
-                        }
-                    );
-                    var pokemonData = responseTask.Result.data as PokemonData;
-                    return new Pokemon {
-                        Id = pokemonData.Id,
-                        Name = pokemonData.Name,
-                        PokedexNumber = pokemonData.PokedexNumber,
-                        ImageUrl = pokemonData.ImageUrl,
-                    };
-                }
-            );
-            Field<PokemonType>(
-                "featuredPokemon3",
-                resolve: context => {
-                    var responseTask = queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
-                        new PokemonRequestMessage {
-                            Id = context.Source.FeaturedPokemon3,
-                        }
-                    );
-                    var pokemonData = responseTask.Result.data as PokemonData;
-                    return new Pokemon {
-                        Id = pokemonData.Id,
-                        Name = pokemonData.Name,
-                        PokedexNumber = pokemonData.PokedexNumber,
-                        ImageUrl = pokemonData.ImageUrl,
-                    };
+                    var responseTasks = new List<Task<ResultMessage>>();
+                    foreach (Guid pokemon in context.Source.FeaturedPokemon) {
+                        responseTasks.Add(
+                            queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
+                                new PokemonRequestMessage {
+                                    Id = pokemon,
+                                }
+                            )
+                        );
+                    }
+                    var pokemen = new List<Pokemon>();
+                    foreach (var result in Task.WhenAll(responseTasks).Result) {
+                        var data = result.data as PokemonData;
+                        pokemen.Add(
+                            new Pokemon {
+                                Id = data.Id,
+                                Name = data.Name,
+                                PokedexNumber = data.PokedexNumber,
+                                ImageUrl = data.ImageUrl,
+                            }
+                        );
+                    }
+                    return pokemen;
                 }
             );
             Field<StringGraphType>("teamId", resolve: context => context.Source.TeamId.ToString());

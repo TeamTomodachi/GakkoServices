@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GakkoServices.Core.Services;
+using GakkoServices.Core.Helpers;
 using GakkoServices.Microservices.MetadataService.Data.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RawRabbit;
+using RawRabbit.vNext;
 
 namespace GakkoServices.Microservices.MetadataService
 {
@@ -21,11 +24,13 @@ namespace GakkoServices.Microservices.MetadataService
 
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
+        private readonly ILogger _logger;
 
-        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment, ILogger<Startup> logger)
         {
             Configuration = configuration;
             Environment = environment;
+            _logger = logger;
 
             // Setup Configuraiton
             var builder = new ConfigurationBuilder()
@@ -45,6 +50,13 @@ namespace GakkoServices.Microservices.MetadataService
 
             // Configure DBContexts
             services.AddDbContext<MetadataServiceDbContext>(options => databaseConfig.BuildDBContext(options));
+
+            services.AddRawRabbit(options =>
+            {
+                options.SetBasePath(Environment.ContentRootPath)
+                    .AddJsonFile("rawrabbit.json")
+                    .AddEnvironmentVariables("RawRabbit:");
+            });
 
             // Add MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -90,6 +102,11 @@ namespace GakkoServices.Microservices.MetadataService
             {
                 c.SwaggerEndpoint($"/{SERVICE_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Profile Service API");
             });
+
+            _logger.LogInformation("Waiting for rabbitmq...");
+            // Block until the rabbitmq panel is online
+            NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
+            _logger.LogInformation("rabbitmq is ready");
 
             // Setup MVC with a Default Route
             //app.UseMvcWithDefaultRoute();

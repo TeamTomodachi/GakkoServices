@@ -8,6 +8,7 @@ using GakkoServices.Core.Messages;
 using RawRabbit;
 using RawRabbit.Context;
 using GakkoServices.Microservices.MetadataService.Models;
+using GakkoServices.Microservices.MetadataService.Services;
 using GakkoServices.Core.Services;
 using GakkoServices.Core.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +20,13 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
     {
         private IServiceScopeFactory _scopeFactory;
         private IBusClient _queue;
+        private PokeApiService _poke;
 
-        public MessageHandlerService(IServiceScopeFactory scopeFactory, IBusClient queue)
+        public MessageHandlerService(IServiceScopeFactory scopeFactory, IBusClient queue, PokeApiService poke)
         {
             _scopeFactory = scopeFactory;
             _queue = queue;
+            _poke = poke;
         }
 
         protected override Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
@@ -87,11 +90,34 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
                 {
                     pokemon = await dbContext.PogoPokemon.FindAsync(message.Id);
                 }
-                else
+                else if (message.PokedexNumber.HasValue)
                 {
                     pokemon = await dbContext.PogoPokemon
                         .Where(p => p.PokedexNumber == message.PokedexNumber.Value)
                         .FirstAsync();
+                    if (pokemon == null)
+                    {
+                        // get from api, add to database, return
+                        pokemon = await _poke.CreatePogoPokemonFromPokeApi(message.PokedexNumber.Value);
+                        await dbContext.AddAsync(pokemon);
+                        await dbContext.SaveChangesAsync();
+                    }
+                }
+                else if (message.Name != null)
+                {
+                    pokemon = await dbContext.PogoPokemon
+                        .Where(p => p.Name == message.Name)
+                        .FirstAsync();
+                    if (pokemon == null)
+                    {
+                        // get from api, add to database, return
+                        pokemon = await _poke.CreatePogoPokemonFromPokeApi(message.Name);
+                        await dbContext.AddAsync(pokemon);
+                        await dbContext.SaveChangesAsync();
+                    }
+                }
+                else {
+                    throw new ArgumentNullException();
                 }
 
                 return new ResultMessage {

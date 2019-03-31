@@ -6,5 +6,6 @@ namespace GakkoServices.Core.Messages
     {
         public Guid Id { get; set; }
         public int? PokedexNumber { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -36,6 +36,12 @@ namespace GakkoServices.Microservices.MetadataService.Services
             return p;
         }
 
+        public async Task<PogoPokemon> CreatePogoPokemonFromPokeApi(string pokemonName)
+        {
+            var pokeApiPokemon = await GetPokemonAsync(pokemonName);
+            return await CreatePogoPokemonFromPokeApi(pokeApiPokemon.ID);
+        }
+
         public async Task<PogoPokemon> CreatePogoPokemonFromPokeApi(int pokedexId)
         {
             // Get the Pokemon
@@ -55,12 +61,6 @@ namespace GakkoServices.Microservices.MetadataService.Services
             pogoPokemon.Name = pokemonName;
             pogoPokemon.PokedexNumber = pokedexNumber;
             return pogoPokemon;
-        }
-
-        public async Task<PogoPokemon> CreatePogoPokemonFromPokeApi(string pokemonName)
-        {
-            var pokeApiPokemon = await GetPokemonAsync(pokemonName);
-            return await CreatePogoPokemonFromPokeApi(pokeApiPokemon.ID);
         }
     }
 }

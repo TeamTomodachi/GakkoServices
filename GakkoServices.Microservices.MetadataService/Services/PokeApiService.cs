@@ -22,7 +22,7 @@ namespace GakkoServices.Microservices.MetadataService.Services
         }
         public async Task<PokemonSpecies> GetPokemonSpeciesAsync(string pokemonName)
         {
-            var p = await DataFetcher.GetNamedApiObject<PokemonSpecies>(pokemonName);
+            var p = await DataFetcher.GetNamedApiObject<PokemonSpecies>(pokemonName.ToLower());
             return p;
         }
         public async Task<Pokemon> GetPokemonAsync(int pokedexId)
@@ -32,7 +32,7 @@ namespace GakkoServices.Microservices.MetadataService.Services
         }
         public async Task<Pokemon> GetPokemonAsync(string pokemonName)
         {
-            var p = await DataFetcher.GetNamedApiObject<Pokemon>(pokemonName);
+            var p = await DataFetcher.GetNamedApiObject<Pokemon>(pokemonName.ToLower());
             return p;
         }
 

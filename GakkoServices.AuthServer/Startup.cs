@@ -29,6 +29,9 @@ using RawRabbit;
 using RawRabbit.vNext;
 using GakkoServices.AuthServer.Business.Services;
 using GakkoServices.Core.Services;
+using System.Net;
+using IdentityServer4.Stores;
+using IdentityServer4.EntityFramework.Stores;
 
 namespace GakkoServices.AuthServer
 {
@@ -83,7 +86,6 @@ namespace GakkoServices.AuthServer
             var builder = services.AddIdentityServer(options =>
             {
                 options.Discovery.ShowTokenEndpointAuthenticationMethods = true;
-                //options.Authentication.CookieAuthenticationScheme = "/";
                 options.Discovery.CustomEntries.Add("UserAccount", "~/api/UserAccount");
             }).AddAspNetIdentity<ApplicationUser>()
             .AddConfigurationStore(options => // this adds the config data from DB (clients, resources)
@@ -93,9 +95,12 @@ namespace GakkoServices.AuthServer
             .AddOperationalStore(options => // this adds the operational data from DB (codes, tokens, consents)
             {
                 options.ConfigureDbContext = b => databaseConfig.BuildDBContext(b);
+                
                 options.EnableTokenCleanup = true; // this enables automatic token cleanup. this is optional.
             })
             .AddDeveloperSigningCredential();
+
+            services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
 
             // ToDo: Change the IdentityServer Endpoints
             // https://stackoverflow.com/questions/39186533/change-default-endpoint-in-identityserver-4
@@ -123,7 +128,18 @@ namespace GakkoServices.AuthServer
             //         options.LoginPath = "/auth/account/login";
             //         options.LogoutPath = "/auth/account/logout";
             //     })
+
+            // Create the Cookie Builder
+            CookieBuilder cookieBuilder = new CookieBuilder();
+            cookieBuilder.Domain = ".pogogakko.com";
+            cookieBuilder.Path = "/";
+
+            // Add Authentication Providers
             services.AddAuthentication()
+                .AddCookie(options =>
+                {
+                    options.Cookie = cookieBuilder;
+                })
                 .AddGoogle("Google", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;

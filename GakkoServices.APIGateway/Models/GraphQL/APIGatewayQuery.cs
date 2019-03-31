@@ -40,13 +40,35 @@ namespace GakkoServices.APIGateway.Models.GraphQL
 
             Field<PokemonType>(
                 "pokemon",
-                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
+                arguments: new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "id" },
+                    new QueryArgument<StringGraphType> { Name = "name" },
+                    new QueryArgument<IntGraphType> { Name = "pokedexNumber" }
+                ),
                 resolve: context => {
-                    var responseTask = queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
-                        new PokemonRequestMessage {
+                    PokemonRequestMessage message;
+                    if (context.HasArgument("id"))
+                    {
+                        message = new PokemonRequestMessage {
                             Id = Guid.Parse(context.GetArgument<string>("id")),
-                        }
-                    );
+                        };
+                    }
+                    else if (context.HasArgument("name"))
+                    {
+                        message = new PokemonRequestMessage {
+                            Name = context.GetArgument<string>("name"),
+                        };
+                    }
+                    else if (context.HasArgument("pokedexNumber"))
+                    {
+                        message = new PokemonRequestMessage {
+                            PokedexNumber = context.GetArgument<int>("pokedexNumber"),
+                        };
+                    }
+                    else {
+                        throw new ArgumentNullException();
+                    }
+                    var responseTask = queue.RequestAsync<PokemonRequestMessage, ResultMessage>(message);
                     var pokemonData = responseTask.Result.data as PokemonData;
                     return new Pokemon {
                         Id = pokemonData.Id,

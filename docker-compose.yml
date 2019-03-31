@@ -25,6 +25,18 @@ services:
       - 15672:15672 # management panel
 
 
+  client:
+    image: teamtomodachi/gakkofront
+    build:
+      context: ./GakkoFront
+    networks:
+      - traefik
+    labels:
+      traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
+      traefik.frontend.rule: PathPrefix:/
+      traefik.port: 80
+
+
   APIGateway:
     image: gakkoservices/apigateway
     build:

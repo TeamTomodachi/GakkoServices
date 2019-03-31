@@ -16,5 +16,9 @@ namespace GakkoServices.Microservices.ProfileService.Models
         public string PogoUsername { get; set; }
         public string PogoTrainerCode { get; set; }
         public int PogoLevel { get; set; }
+
+        public Guid FeaturedPokemon1 { get; set; }
+        public Guid FeaturedPokemon2 { get; set; }
+        public Guid FeaturedPokemon3 { get; set; }
     }
 }

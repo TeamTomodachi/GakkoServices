@@ -46,6 +46,9 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                         TrainerCode = profile.PogoTrainerCode,
                         Level = profile.PogoLevel,
                         TeamId = profile.PogoTeamId,
+                        FeaturedPokemon1 = profile.FeaturedPokemon1,
+                        FeaturedPokemon2 = profile.FeaturedPokemon2,
+                        FeaturedPokemon3 = profile.FeaturedPokemon3,
                     },
                 };
             }
@@ -60,6 +63,9 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 PogoUsername = "anonymous",
                 PogoLevel = 1,
                 PogoTrainerCode = "0000 0000 0000",
+                FeaturedPokemon1 = Guid.Parse(""),
+                FeaturedPokemon2 = Guid.Parse(""),
+                FeaturedPokemon3 = Guid.Parse(""),
             };
 
             using (var scope = _scopeFactory.CreateScope())

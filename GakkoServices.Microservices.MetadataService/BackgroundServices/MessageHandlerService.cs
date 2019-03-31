@@ -82,7 +82,17 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
             using (var scope = _scopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
-                PogoPokemon pokemon = await dbContext.PogoPokemon.FindAsync(message.Id);
+                PogoPokemon pokemon;
+                if (message.Id != null)
+                {
+                    pokemon = await dbContext.PogoPokemon.FindAsync(message.Id);
+                }
+                else
+                {
+                    pokemon = await dbContext.PogoPokemon
+                        .Where(p => p.PokedexNumber == message.PokedexNumber.Value)
+                        .FirstAsync();
+                }
 
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,

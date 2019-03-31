@@ -34,13 +34,16 @@ namespace GakkoServices.Microservices.MetadataService.Services
         {
             // Get the Pokemon
             var pokeApiPokemon = await GetPokemonAsync(pokedexId);
+            var pokeApiPokemonSpecies = await GetPokemonSpeciesAsync(pokedexId);
 
             // Create the PogoPokemon DB Record, for entry into the DB
             PogoPokemon pogoPokemon = new PogoPokemon();
             pogoPokemon.Id = Guid.NewGuid();
             pogoPokemon.ImageUrl = pokeApiPokemon.Sprites.FrontMale != null ? pokeApiPokemon.Sprites.FrontMale : pokeApiPokemon.Sprites.FrontFemale;
             pogoPokemon.Name = pokeApiPokemon.Name;
-            pogoPokemon.PokedexNumber = pokeApiPokemon.ID;
+            pogoPokemon.PokedexNumber = pokeApiPokemonSpecies.PokedexNumbers
+                .FirstOrDefault()
+                    .EntryNumber;
             return pogoPokemon;
         }
 

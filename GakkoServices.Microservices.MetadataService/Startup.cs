@@ -17,6 +17,7 @@ using Hosting = Microsoft.Extensions.Hosting;
 using GakkoServices.Microservices.MetadataService.BackgroundServices;
 using RawRabbit;
 using RawRabbit.vNext;
+using GakkoServices.Microservices.MetadataService.Services;
 
 namespace GakkoServices.Microservices.MetadataService
 {
@@ -73,6 +74,7 @@ namespace GakkoServices.Microservices.MetadataService
             services.AddHttpContextAccessor();
             services.AddSingleton<ContextServiceLocator>();
             services.AddSingleton<Hosting.IHostedService, MessageHandlerService>();
+            services.AddSingleton<PokeApiService, PokeApiService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

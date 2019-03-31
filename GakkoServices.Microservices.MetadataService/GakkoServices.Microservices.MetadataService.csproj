@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="PokeApi.NET" Version="1.1.1" />
     <PackageReference Include="RawRabbit" Version="1.10.4" />
     <PackageReference Include="RawRabbit.vNext" Version="1.10.4" />
     <ProjectReference Include="../GakkoServices.Core/GakkoServices.Core.csproj" />

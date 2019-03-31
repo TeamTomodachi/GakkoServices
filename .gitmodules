@@ -1,0 +1,3 @@
+[submodule "GakkoFront"]
+	path = GakkoFront
+	url = https://github.com/TeamTomodachi/GakkoFront.git

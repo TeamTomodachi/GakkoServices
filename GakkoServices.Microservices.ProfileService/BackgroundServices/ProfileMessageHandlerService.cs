@@ -45,6 +45,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                         Username = profile.PogoUsername,
                         TrainerCode = profile.PogoTrainerCode,
                         Level = profile.PogoLevel,
+                        TeamId = profile.PogoTeamId,
                     },
                 };
             }

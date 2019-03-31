@@ -46,7 +46,8 @@ namespace GakkoServices.APIGateway.Controllers.API
             {
                 Schema = m_schema,
                 Query = query.Query,
-                Inputs = inputs
+                Inputs = inputs,
+                // ExposeExceptions = true,
             };
 
             var result = await m_documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);

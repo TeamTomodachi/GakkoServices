@@ -13,6 +13,7 @@ namespace GakkoServices.APIGateway
             services.AddSingleton<APIGatewayMutation>();
             services.AddSingleton<ProfileType>();
             services.AddSingleton<TeamType>();
+            services.AddSingleton<PokemonType>();
         }
     }
 }

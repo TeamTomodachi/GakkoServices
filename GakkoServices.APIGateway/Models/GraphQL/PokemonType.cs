@@ -3,15 +3,15 @@ using GakkoServices.Core.Services;
 
 namespace GakkoServices.APIGateway.Models.GraphQL
 {
-    public class TeamType : ObjectGraphType<Team>
+    public class PokemonType : ObjectGraphType<Pokemon>
     {
-        public TeamType(ContextServiceLocator contextServiceLocator)
+        public PokemonType(ContextServiceLocator ContextServiceLocator)
         {
-            Name = "Team";
+            Name = "Pokemon";
 
             Field<StringGraphType>("id", resolve: context => context.Source.Id.ToString());
             Field(x => x.Name);
-            Field(x => x.Color);
+            Field(x => x.PokedexNumber);
             Field(x => x.ImageUrl);
         }
     }

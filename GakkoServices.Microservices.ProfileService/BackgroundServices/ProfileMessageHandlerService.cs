@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,6 +57,16 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
 
         private async Task CreateProfile(UserCreateMessage message, MessageContext context)
         {
+            Func<int, Task<ResultMessage>> getByPokedex = (int num) => 
+                _queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
+                    new PokemonRequestMessage { PokedexNumber = num });
+
+            var pokemonResults = (await Task.WhenAll(new Task<ResultMessage>[] {
+                getByPokedex(1),
+                getByPokedex(2),
+                getByPokedex(3),
+            })).Select(result => result.data as PokemonData).ToArray();
+
             var profile = new PogoProfile
             {
                 Id = message.Id,
@@ -63,9 +74,9 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 PogoUsername = "anonymous",
                 PogoLevel = 1,
                 PogoTrainerCode = "0000 0000 0000",
-                FeaturedPokemon1 = Guid.Parse(""),
-                FeaturedPokemon2 = Guid.Parse(""),
-                FeaturedPokemon3 = Guid.Parse(""),
+                FeaturedPokemon1 = pokemonResults[0].Id,
+                FeaturedPokemon2 = pokemonResults[1].Id,
+                FeaturedPokemon3 = pokemonResults[2].Id,
             };
 
             using (var scope = _scopeFactory.CreateScope())

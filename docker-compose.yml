@@ -103,6 +103,35 @@ services:
       traefik.enable: false
 
 
+  MetadataService:
+    image: gakkoservices/metadataservice
+    build:
+      context: .
+      dockerfile: Dockerfile-aspnetcore
+      args:
+        - name=GakkoServices.Microservices.MetadataService
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - internal
+      - metadataservice_db_network
+    depends_on:
+      - MetadataServiceDB
+      - rabbitmq
+    labels:
+      traefik.enable: false
+
+
+  MetadataServiceDB:
+    image: postgres:alpine
+    networks:
+      - metadataservice_db_network
+    volumes:
+      - metadataservicedb:/var/lib/postgresql/data
+    labels:
+      traefik.enable: false
+
+
   adminer:
     image: adminer
     networks:
@@ -122,7 +151,10 @@ networks:
     external: false
   profileservice_db_network:
     external: false
+  metadataservice_db_network:
+    external: false
 
 volumes:
   authserverdb:
   profileservicedb:
+  metadataservicedb:

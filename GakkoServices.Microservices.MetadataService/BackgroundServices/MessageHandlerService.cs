@@ -26,6 +26,7 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
         protected override Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
         {
             _queue.RespondAsync<TeamRequestMessage, ResultMessage>(GetTeam);
+            _queue.RespondAsync<PokemonRequestMessage, ResultMessage>(GetPokemon);
             return Task.CompletedTask;
         }
 

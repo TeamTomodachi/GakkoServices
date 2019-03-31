@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using GakkoServices.Microservices.MetadataService.Data.Contexts;
 using GakkoServices.Core.Messages;
@@ -21,12 +22,15 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
         private IServiceScopeFactory _scopeFactory;
         private IBusClient _queue;
         private PokeApiService _poke;
+        private ILogger _logger;
 
-        public MessageHandlerService(IServiceScopeFactory scopeFactory, IBusClient queue, PokeApiService poke)
+        public MessageHandlerService(IServiceScopeFactory scopeFactory, IBusClient queue,
+                                     PokeApiService poke, ILoggerFactory loggerFactory)
         {
             _scopeFactory = scopeFactory;
             _queue = queue;
             _poke = poke;
+            _logger = loggerFactory?.CreateLogger<MessageHandlerService>();
         }
 
         protected override Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
@@ -86,17 +90,19 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
                 PogoPokemon pokemon;
-                if (message.Id != null)
+                if (message.Id.HasValue)
                 {
+                    _logger.LogDebug("Got pokemon ID in request message {Guid}", message.Id);
                     pokemon = await dbContext.PogoPokemon.FindAsync(message.Id);
                 }
                 else if (message.PokedexNumber.HasValue)
                 {
                     pokemon = await dbContext.PogoPokemon
                         .Where(p => p.PokedexNumber == message.PokedexNumber.Value)
-                        .FirstAsync();
+                        .FirstOrDefaultAsync();
                     if (pokemon == null)
                     {
+                        _logger.LogDebug("Pokemon is null, getting by pokedexNumber from api");
                         // get from api, add to database, return
                         pokemon = await _poke.CreatePogoPokemonFromPokeApi(message.PokedexNumber.Value);
                         await dbContext.AddAsync(pokemon);
@@ -107,9 +113,10 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
                 {
                     pokemon = await dbContext.PogoPokemon
                         .Where(p => p.Name.ToLower() == message.Name.ToLower())
-                        .FirstAsync();
+                        .FirstOrDefaultAsync();
                     if (pokemon == null)
                     {
+                        _logger.LogDebug("Pokemon is null, getting by name from api");
                         // get from api, add to database, return
                         pokemon = await _poke.CreatePogoPokemonFromPokeApi(message.Name);
                         await dbContext.AddAsync(pokemon);

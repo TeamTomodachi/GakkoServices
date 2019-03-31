@@ -13,6 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Hosting = Microsoft.Extensions.Hosting;
+using GakkoServices.Microservices.MetadataService.BackgroundServices;
 using RawRabbit;
 using RawRabbit.vNext;
 
@@ -70,6 +72,7 @@ namespace GakkoServices.Microservices.MetadataService
             // Additional Configuration
             services.AddHttpContextAccessor();
             services.AddSingleton<ContextServiceLocator>();
+            services.AddSingleton<Hosting.IHostedService, MessageHandlerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

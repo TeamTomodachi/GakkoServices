@@ -149,6 +149,7 @@ services:
     networks:
       - authserver_db_network
       - profileservice_db_network
+      - metadataservice_db_network
     ports:
       - 8081:8080
     labels:

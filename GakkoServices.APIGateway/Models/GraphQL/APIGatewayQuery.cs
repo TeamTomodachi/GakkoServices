@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using GraphQL.Types;
 using GakkoServices.Core.Services;
 using GakkoServices.Core.Messages;
@@ -68,6 +69,26 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         Color = teamData.Color,
                         ImageUrl = teamData.ImageUrl,
                     };
+                }
+            );
+
+            Field<ListGraphType<TeamType>>(
+                "teams",
+                resolve: context => {
+                    var responseTask = queue.RequestAsync<TeamsRequestMessage, ResultMessage>(
+                        new TeamsRequestMessage()
+                    );
+                    var teamDatas = responseTask.Result.data as List<TeamData>;
+                    var teams = new List<Team>();
+                    foreach (var teamData in teamDatas) {
+                        teams.Add(new Team {
+                            Id = teamData.Id,
+                            Name = teamData.Name,
+                            Color = teamData.Color,
+                            ImageUrl = teamData.ImageUrl,
+                        });
+                    }
+                    return teams;
                 }
             );
         }

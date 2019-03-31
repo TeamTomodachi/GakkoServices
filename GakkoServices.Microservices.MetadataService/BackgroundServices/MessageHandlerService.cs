@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using GakkoServices.Microservices.MetadataService.Data.Contexts;
@@ -9,6 +10,8 @@ using RawRabbit.Context;
 using GakkoServices.Microservices.MetadataService.Models;
 using GakkoServices.Core.Services;
 using GakkoServices.Core.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace GakkoServices.Microservices.MetadataService.BackgroundServices
 {
@@ -26,6 +29,7 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
         protected override Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
         {
             _queue.RespondAsync<TeamRequestMessage, ResultMessage>(GetTeam);
+            _queue.RespondAsync<TeamsRequestMessage, ResultMessage>(GetAllTeams);
             _queue.RespondAsync<PokemonRequestMessage, ResultMessage>(GetPokemon);
             return Task.CompletedTask;
         }
@@ -45,6 +49,30 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
                         Color = team.Color,
                         ImageUrl = team.ImageUrl,
                     },
+                };
+            }
+        }
+
+        private async Task<ResultMessage> GetAllTeams(TeamsRequestMessage message, MessageContext context)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
+                var teams = await dbContext.PogoTeams.ToListAsync();
+
+                var teamDatas = new List<TeamData>();
+                foreach (var team in teams) {
+                    teamDatas.Add(new TeamData {
+                        Id = team.Id,
+                        Name = team.Name,
+                        Color = team.Color,
+                        ImageUrl = team.ImageUrl,
+                    });
+                }
+
+                return new ResultMessage {
+                    status = ResultMessage.Status.Ok,
+                    data = teamDatas,
                 };
             }
         }

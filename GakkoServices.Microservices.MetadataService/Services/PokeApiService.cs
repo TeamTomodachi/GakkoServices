@@ -9,6 +9,12 @@ namespace GakkoServices.Microservices.MetadataService.Services
 {
     public class PokeApiService
     {
+        public PokeApiService()
+        {
+            HttpBackend httpBackend = new HttpBackend("https://pokeapi.co/api/v2/", "PogoGakko");
+            DataFetcher.DataBackend = httpBackend;
+        }
+
         public async Task<PokemonSpecies> GetPokemonSpeciesAsync(int pokedexId)
         {
             var p = await DataFetcher.GetApiObject<PokemonSpecies>(pokedexId);

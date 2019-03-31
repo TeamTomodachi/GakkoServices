@@ -142,6 +142,21 @@ services:
     labels:
       traefik.enable: false
 
+  static:
+    image: halverneus/static-file-server
+    environment:
+      - FOLDER=/static
+      - PORT=80
+    networks:
+      - traefik
+    volumes:
+      - ./static:/static
+    labels:
+      traefik.enable: true
+      traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
+      traefik.frontend.rule: PathPrefixStrip:/static
+      traefik.port: 80
+
 networks:
   traefik:
     external: false

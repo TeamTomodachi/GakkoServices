@@ -129,17 +129,17 @@ namespace GakkoServices.AuthServer
             //         options.LogoutPath = "/auth/account/logout";
             //     })
 
-            // Create the Cookie Builder
-            CookieBuilder cookieBuilder = new CookieBuilder();
-            cookieBuilder.Domain = ".pogogakko.com";
-            cookieBuilder.Path = "/";
+            //// Create the Cookie Builder
+            //CookieBuilder cookieBuilder = new CookieBuilder();
+            //cookieBuilder.Domain = ".pogogakko.com";
+            //cookieBuilder.Path = "/";
 
             // Add Authentication Providers
             services.AddAuthentication()
-                .AddCookie(options =>
-                {
-                    options.Cookie = cookieBuilder;
-                })
+                // .AddCookie(options =>
+                // {
+                    // options.Cookie = cookieBuilder;
+                // })
                 .AddGoogle("Google", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;

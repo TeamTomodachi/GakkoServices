@@ -69,7 +69,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
 
             var profile = new PogoProfile
             {
-                Id = message.Id,
+                Id = Guid.NewGuid(),
                 UserAccountId = message.Id,
                 PogoUsername = "anonymous",
                 PogoLevel = 1,

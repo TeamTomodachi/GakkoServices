@@ -109,7 +109,7 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
                         await dbContext.SaveChangesAsync();
                     }
                 }
-                else if (message.Name != null)
+                else if (!string.IsNullOrWhiteSpace(message.Name))
                 {
                     pokemon = await dbContext.PogoPokemon
                         .Where(p => p.Name.ToLower() == message.Name.ToLower())

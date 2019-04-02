@@ -37,7 +37,17 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
             using (var scope = _scopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ProfileServiceDbContext>();
-                var profile = await dbContext.PogoProfiles.FindAsync(message.Id);
+
+                PogoProfile profile;
+                if (message.Id.HasValue) {
+                    profile = await dbContext.PogoProfiles.FindAsync(message.Id);
+                }
+                else if (message.UserAccountId.HasValue) {
+                    profile = await dbContext.PogoProfiles.Where(x => x.UserAccountId == message.UserAccountId).FirstOrDefault();
+                }
+                else {
+                    throw new ArgumentNullException();
+                }
 
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,

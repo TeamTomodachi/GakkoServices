@@ -54,8 +54,6 @@ namespace GakkoServices.Microservices.MetadataService.Services
             var pokemonName = pokeApiPokemonSpecies.Names.Where(x => x.Language.Name == "en").Select(x => x.Name).FirstOrDefault();
             if (string.IsNullOrWhiteSpace(pokemonName)) pokemonName = pokeApiPokemon.Name;
 
-            // Create the PogoImageUrl
-
             // Create the PogoPokemon DB Record, for entry into the DB
             PogoPokemon pogoPokemon = new PogoPokemon();
             pogoPokemon.Id = Guid.NewGuid();

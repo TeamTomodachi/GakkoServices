@@ -6,5 +6,6 @@ namespace GakkoServices.Core.Messages
     {
         public Guid? Id { get; set; }
         public Guid? UserAccountId { get; set; }
+        public string Username { get; set; }
     }
 }

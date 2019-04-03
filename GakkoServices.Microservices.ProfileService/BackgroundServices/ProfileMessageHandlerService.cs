@@ -43,7 +43,11 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                     profile = await dbContext.PogoProfiles.FindAsync(message.Id);
                 }
                 else if (message.UserAccountId.HasValue) {
-                    profile = await dbContext.PogoProfiles.Where(x => x.UserAccountId == message.UserAccountId).FirstOrDefault();
+                    profile = dbContext.PogoProfiles.Where(x => x.UserAccountId == message.UserAccountId).FirstOrDefault();
+                }
+                else if (!string.IsNullOrWhiteSpace(message.Username))
+                {
+                    profile = dbContext.PogoProfiles.Where(x => x.PogoUsername == message.Username).FirstOrDefault();
                 }
                 else {
                     throw new ArgumentNullException();
@@ -57,6 +61,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                         TrainerCode = profile.PogoTrainerCode,
                         Level = profile.PogoLevel,
                         TeamId = profile.PogoTeamId,
+                        Gender = profile.PlayerGender,
                         FeaturedPokemon1 = profile.FeaturedPokemon1,
                         FeaturedPokemon2 = profile.FeaturedPokemon2,
                         FeaturedPokemon3 = profile.FeaturedPokemon3,
@@ -84,6 +89,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 PogoUsername = "anonymous",
                 PogoLevel = 1,
                 PogoTrainerCode = "0000 0000 0000",
+                PlayerGender = Gender.None,
                 FeaturedPokemon1 = pokemonResults[0].Id,
                 FeaturedPokemon2 = pokemonResults[1].Id,
                 FeaturedPokemon3 = pokemonResults[2].Id,
@@ -112,7 +118,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                     if (message.PogoTeamId.HasValue) {
                         profile.PogoTeamId = message.PogoTeamId.Value;
                     }
-                    if (message.PogoUsername != null) {
+                    if (!string.IsNullOrWhiteSpace(message.PogoUsername)) {
                         profile.PogoUsername = message.PogoUsername;
                     }
                     await dbContext.SaveChangesAsync();

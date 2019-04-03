@@ -49,18 +49,29 @@ namespace GakkoServices.Microservices.MetadataService.Services
             var pokeApiPokemonSpecies = await GetPokemonSpeciesAsync(pokedexId);
 
             // Parse out the response
-            var imageUrl = pokeApiPokemon.Sprites.FrontMale != null ? pokeApiPokemon.Sprites.FrontMale : pokeApiPokemon.Sprites.FrontFemale;
+            var spriteImageUrl = pokeApiPokemon.Sprites.FrontMale != null ? pokeApiPokemon.Sprites.FrontMale : pokeApiPokemon.Sprites.FrontFemale;
             var pokedexNumber = pokeApiPokemon.ID;
             var pokemonName = pokeApiPokemonSpecies.Names.Where(x => x.Language.Name == "en").Select(x => x.Name).FirstOrDefault();
             if (string.IsNullOrWhiteSpace(pokemonName)) pokemonName = pokeApiPokemon.Name;
 
+            // Create the PogoImageUrl
+
             // Create the PogoPokemon DB Record, for entry into the DB
             PogoPokemon pogoPokemon = new PogoPokemon();
             pogoPokemon.Id = Guid.NewGuid();
-            pogoPokemon.ImageUrl = imageUrl;
+            pogoPokemon.SpriteImageUrl = spriteImageUrl;
+            pogoPokemon.PogoImageUrl = CreatePogoImageUrl(pokedexNumber);
             pogoPokemon.Name = pokemonName;
             pogoPokemon.PokedexNumber = pokedexNumber;
             return pogoPokemon;
+        }
+
+        public string CreatePogoImageUrl(int pokedexNumber)
+        {
+            string formattedPokedexNumber = pokedexNumber.ToString("000");
+            string imageLinkP1 = "https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/pokemon_icons/pokemon_icon_";
+            string imageLinkP2 = "_00.png";
+            return imageLinkP1 + formattedPokedexNumber + imageLinkP2;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace GakkoServices.Microservices.MetadataService.Models
 
         [Required]
         public string Name { get; set; }
-        public string ImageUrl { get; set; } = "";
+        public string SpriteImageUrl { get; set; } = "";
+        public string PogoImageUrl { get; set; } = "";
     }
 }

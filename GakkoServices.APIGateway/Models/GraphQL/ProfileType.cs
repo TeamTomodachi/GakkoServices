@@ -34,7 +34,8 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         Id = pokemonData.Id,
                         Name = pokemonData.Name,
                         PokedexNumber = pokemonData.PokedexNumber,
-                        ImageUrl = pokemonData.ImageUrl,
+                        SpriteImageUrl = pokemonData.SpriteImageUrl,
+                        PogoImageUrl = pokemonData.PogoImageUrl,
                     };
                 }
             );
@@ -59,7 +60,8 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                                 Id = data.Id,
                                 Name = data.Name,
                                 PokedexNumber = data.PokedexNumber,
-                                ImageUrl = data.ImageUrl,
+                                SpriteImageUrl = data.SpriteImageUrl,
+                                PogoImageUrl = data.PogoImageUrl,
                             }
                         );
                     }

@@ -12,7 +12,8 @@ namespace GakkoServices.APIGateway.Models.GraphQL
             Field<StringGraphType>("id", resolve: context => context.Source.Id.ToString());
             Field(x => x.Name);
             Field(x => x.PokedexNumber);
-            Field(x => x.ImageUrl);
+            Field(x => x.SpriteImageUrl);
+            Field(x => x.PogoImageUrl);
         }
     }
 }

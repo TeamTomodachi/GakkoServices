@@ -9,6 +9,7 @@ namespace GakkoServices.Core.Models
         public int PokedexNumber { get; set; }
 
         public string Name { get; set; }
-        public string ImageUrl { get; set; }
+        public string SpriteImageUrl { get; set; }
+        public string PogoImageUrl { get; set; }
     }
 }

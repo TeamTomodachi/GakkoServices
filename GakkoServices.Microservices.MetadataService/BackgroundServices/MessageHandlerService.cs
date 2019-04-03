@@ -133,7 +133,8 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
                         Id = pokemon.Id,
                         Name = pokemon.Name,
                         PokedexNumber = pokemon.PokedexNumber,
-                        ImageUrl = pokemon.ImageUrl,
+                        SpriteImageUrl = pokemon.SpriteImageUrl,
+                        PogoImageUrl = pokemon.PogoImageUrl,
                     },
                 };
             }

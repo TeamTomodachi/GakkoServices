@@ -61,7 +61,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                         TrainerCode = profile.PogoTrainerCode,
                         Level = profile.PogoLevel,
                         TeamId = profile.PogoTeamId,
-                        Gender = profile.PlayerGender,
+                        Gender = (int)profile.PlayerGender,
                         FeaturedPokemon1 = profile.FeaturedPokemon1,
                         FeaturedPokemon2 = profile.FeaturedPokemon2,
                         FeaturedPokemon3 = profile.FeaturedPokemon3,

@@ -6,11 +6,13 @@ using GakkoServices.APIGateway.Models;
 using GakkoServices.APIGateway.Models.GraphQL;
 using GraphQL;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GakkoServices.APIGateway.Controllers.API
 {
+    [EnableCors(Startup.CORS_POLICY)]
     [Route("api/[controller]")]
     [ApiController]
     public class GraphQLController : ControllerBase
@@ -24,6 +26,7 @@ namespace GakkoServices.APIGateway.Controllers.API
             m_documentExecuter = documentExecuter;
         }
 
+        [EnableCors(Startup.CORS_POLICY)]
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] GraphQLQuery query)
         {
@@ -31,6 +34,7 @@ namespace GakkoServices.APIGateway.Controllers.API
             return await PreformQuery(query);
         }
 
+        [EnableCors(Startup.CORS_POLICY)]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GraphQLQuery query)
         {

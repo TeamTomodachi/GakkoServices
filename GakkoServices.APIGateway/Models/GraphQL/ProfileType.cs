@@ -19,6 +19,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
             Field(x => x.Username);
             Field(x => x.Level);
             Field(x => x.TrainerCode);
+            Field(x => x.Gender);
             Field<PokemonType>(
                 "featuredPokemon",
                 arguments: new QueryArguments(new QueryArgument<IntGraphType> { Name = "n" }),

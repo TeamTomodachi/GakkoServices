@@ -37,7 +37,8 @@ namespace GakkoServices.AuthServer
 {
     public class Startup
     {
-        const string SERVICE_ENDPOINT_REWRITE = "auth";
+        public const string SERVICE_ENDPOINT_REWRITE = "auth";
+        public const string CORS_POLICY = "default";
 
         public IHostingEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
@@ -184,7 +185,7 @@ namespace GakkoServices.AuthServer
             // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
             services.AddCors(options =>
             {
-                options.AddPolicy("default", policy =>
+                options.AddPolicy(Startup.CORS_POLICY, policy =>
                 {
                     policy
                         .AllowAnyOrigin() 
@@ -240,6 +241,9 @@ namespace GakkoServices.AuthServer
             {
                 c.SwaggerEndpoint($"/{SERVICE_ENDPOINT_REWRITE}/swagger/v1/swagger.json", "Auth Server API");
             });
+
+            // Enable CORS
+            app.UseCors(Startup.CORS_POLICY);
 
             // Setup MVC with a Default Route
             app.UseMvcWithDefaultRoute();

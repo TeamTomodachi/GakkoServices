@@ -39,6 +39,20 @@ namespace GakkoServices.APIGateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add Cors
+            // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
+            services.AddCors(options =>
+            {
+                options.AddPolicy(Startup.CORS_POLICY, policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
+            // Add MVCCore
             services.AddMvcCore()
                 .AddApiExplorer()
                 .AddAuthorization()
@@ -54,25 +68,13 @@ namespace GakkoServices.APIGateway
                     options.Audience = "api1";
                 });
 
-            // Add Cors
-            // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
-            services.AddCors(options =>
-            {
-                options.AddPolicy(Startup.CORS_POLICY, policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
-            });
-
             // Configure Swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "API Gateway API", Version = "v1" });
             });
 
+            // Configure RabbitMq
             services.AddRawRabbit(options =>
             {
                 options.SetBasePath(Environment.ContentRootPath)

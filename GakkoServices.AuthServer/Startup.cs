@@ -72,6 +72,19 @@ namespace GakkoServices.AuthServer
                 .AddEntityFrameworkStores<AspIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
+            // Add Cors
+            // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
+            services.AddCors(options =>
+            {
+                options.AddPolicy(Startup.CORS_POLICY, policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             // Add MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -166,6 +179,7 @@ namespace GakkoServices.AuthServer
                 .SetApplicationName("authserver")
                 .PersistKeysToFileSystem(new System.IO.DirectoryInfo(keysDir));
 
+            // Configure RabbitMq
             services.AddRawRabbit(options =>
             {
                 options.SetBasePath(Environment.ContentRootPath)
@@ -180,19 +194,6 @@ namespace GakkoServices.AuthServer
             {
                 throw new Exception("need to configure key material");
             }
-
-            // Add Cors
-            // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
-            services.AddCors(options =>
-            {
-                options.AddPolicy(Startup.CORS_POLICY, policy =>
-                {
-                    policy
-                        .AllowAnyOrigin() 
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
-            });
 
             // Configure Dependencies
             services.AddScoped<AccountService, AccountService>();

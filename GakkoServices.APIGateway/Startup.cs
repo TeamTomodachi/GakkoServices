@@ -48,7 +48,8 @@ namespace GakkoServices.APIGateway
                     policy
                         .AllowAnyOrigin()
                         .AllowAnyHeader()
-                        .AllowAnyMethod();
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
 

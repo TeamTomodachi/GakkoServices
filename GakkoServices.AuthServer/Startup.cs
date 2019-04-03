@@ -76,12 +76,13 @@ namespace GakkoServices.AuthServer
             // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
             services.AddCors(options =>
             {
-                options.AddPolicy(Startup.CORS_POLICY, policy =>
+                options.AddPolicy(Startup.CORS_POLICY, builderPolicy =>
                 {
-                    policy
+                    builderPolicy
                         .AllowAnyOrigin()
                         .AllowAnyHeader()
-                        .AllowAnyMethod();
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
 

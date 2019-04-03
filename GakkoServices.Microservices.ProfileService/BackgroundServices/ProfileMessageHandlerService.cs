@@ -52,7 +52,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 else {
                     throw new ArgumentNullException();
                 }
-
+                
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,
                     data = new ProfileData {

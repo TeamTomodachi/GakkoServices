@@ -133,9 +133,6 @@ namespace GakkoServices.APIGateway
             // Enable GraphiQL
             app.UseGraphiQl($"/graphiql", $"/{SERVICE_ENDPOINT_REWRITE}/api/graphql");
 
-            // Use Authentication
-            app.UseAuthentication();
-
             // Enable CORS
             app.UseCors(Startup.CORS_POLICY);
             app.UseCors(
@@ -143,6 +140,9 @@ namespace GakkoServices.APIGateway
                 .AllowAnyMethod()
                 .AllowAnyHeader()
             );
+
+            // Use Authentication
+            app.UseAuthentication();
 
             // Setup MVC with a Default Route
             app.UseMvc();

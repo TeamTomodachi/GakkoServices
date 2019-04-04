@@ -14,5 +14,8 @@ namespace GakkoServices.AuthServer.Models.Authentication
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        [Required]
+        public bool RememberLogin { get; set; }
     }
 }

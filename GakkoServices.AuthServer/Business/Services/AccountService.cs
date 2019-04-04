@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using GakkoServices.AuthServer.Business.Models;
 using GakkoServices.AuthServer.Models;
+using GakkoServices.AuthServer.Models.Authentication;
 using GakkoServices.AuthServer.Models.UserAccount;
 using GakkoServices.Core.Messages;
+using IdentityServer4.Events;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
@@ -48,6 +50,19 @@ namespace GakkoServices.AuthServer.Business.Services
             _events = events;
             _logger = loggerFactory?.CreateLogger<AccountService>();
             _bus = bus;
+        }
+
+        public async Task<UserLoginArgs> LoginUser(UserLogin item)
+        {
+            var result = await _signInManager.PasswordSignInAsync(item.Username, item.Password, item.RememberLogin, lockoutOnFailure: true);
+            ApplicationUser loggedInUser = null;
+            if (result.Succeeded)
+            {
+                loggedInUser = await _userManager.FindByNameAsync(item.Username);
+                await _events.RaiseAsync(new UserLoginSuccessEvent(loggedInUser.UserName, loggedInUser.Id.ToString(), loggedInUser.UserName));
+            }
+
+            return new UserLoginArgs(result, loggedInUser);
         }
 
         public async Task<RegisterNewUserArgs> RegisterNewUser(UserCreate item, bool signInUser)

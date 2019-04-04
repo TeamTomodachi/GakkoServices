@@ -4,6 +4,7 @@
 
 using GakkoServices.AuthServer.Business.Services;
 using GakkoServices.AuthServer.Models;
+using GakkoServices.AuthServer.Models.Authentication;
 using GakkoServices.AuthServer.Models.UserAccount;
 using IdentityModel;
 using IdentityServer4.Events;
@@ -96,11 +97,17 @@ namespace IdentityServer4.Quickstart.UI
 
             if (ModelState.IsValid)
             {
-                var result = await _accountService._signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
-                if (result.Succeeded)
+                // Create the UserLogin Model
+                UserLogin userLogin = new UserLogin();
+                userLogin.Username = model.Username;
+                userLogin.Password = model.Password;
+                userLogin.RememberLogin = model.RememberLogin;
+
+                // Login
+                var loginResult = await _accountService.LoginUser(userLogin);
+                if (loginResult.Successful)
                 {
-                    var user = await _accountService._userManager.FindByNameAsync(model.Username);
-                    await _accountService._events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
+                    var user = loginResult.LoggedInUser;
 
                     if (context != null)
                     {

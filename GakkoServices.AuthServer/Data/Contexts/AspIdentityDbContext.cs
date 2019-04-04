@@ -16,6 +16,9 @@ namespace GakkoServices.AuthServer.Data.Contexts
         {
         }
 
+        // Backup if we can't get regular auth to work
+        //public DbSet<AuthToken> AuthTokens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

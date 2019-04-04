@@ -40,6 +40,7 @@ namespace GakkoServices.APIGateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add Cors
             services.AddCors(options =>
             {
                 options.AddPolicy(Startup.CORS_POLICY, policy =>
@@ -50,6 +51,7 @@ namespace GakkoServices.APIGateway
                         .AllowAnyMethod();
                 });
             });
+            services.AddCors();
 
             // Add MVCCore
             services.AddMvcCore()
@@ -58,9 +60,6 @@ namespace GakkoServices.APIGateway
                 .AddJsonFormatters()
                 .AddCors()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            // Add Cors
-            services.AddCors();
 
             // Setup Authentication
             services.AddAuthentication("Bearer")

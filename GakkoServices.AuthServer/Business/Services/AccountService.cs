@@ -54,8 +54,8 @@ namespace GakkoServices.AuthServer.Business.Services
 
         public async Task<UserLoginArgs> LoginUser(UserLogin item)
         {
-            var result = await _signInManager.PasswordSignInAsync(item.Username, item.Password, item.RememberLogin, lockoutOnFailure: true);
             ApplicationUser loggedInUser = null;
+            var result = await _signInManager.PasswordSignInAsync(item.Username, item.Password, item.RememberLogin, lockoutOnFailure: true);
             if (result.Succeeded)
             {
                 loggedInUser = await _userManager.FindByNameAsync(item.Username);

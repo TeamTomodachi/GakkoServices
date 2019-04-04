@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RawRabbit;
 using RawRabbit.vNext;
+using GakkoServices.Core.Middleware;
 
 namespace GakkoServices.APIGateway
 {
@@ -39,26 +40,26 @@ namespace GakkoServices.APIGateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add Cors
-            // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
-            services.AddCors(options =>
-            {
-                options.AddPolicy(Startup.CORS_POLICY, policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                });
-            });
-
             // Add MVCCore
             services.AddMvcCore()
                 .AddApiExplorer()
                 .AddAuthorization()
                 .AddJsonFormatters()
+                .AddCors()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // Add Cors
+            services.AddCors();
+            //services.AddCors(options =>
+            //{
+            //    options.AddPolicy(Startup.CORS_POLICY, policy =>
+            //    {
+            //        policy
+            //            .AllowAnyOrigin()
+            //            .AllowAnyHeader()
+            //            .AllowAnyMethod()
+            //    });
+            //});
 
             // Setup Authentication
             services.AddAuthentication("Bearer")
@@ -114,6 +115,14 @@ namespace GakkoServices.APIGateway
                 app.UseHsts();
             }
 
+            // Enable custom Middleware to force Cross Site Access
+            app.UseSecurityHeadersMiddleware(new SecurityHeadersBuilder()
+                .AddDefaultSecurePolicy()
+                //.AddCustomHeader("Access-Control-Allow-Origin", "http://localhost:3000")
+                //.AddCustomHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE")
+                //.AddCustomHeader("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type, Authorization")
+                .AddCustomHeader("X-Developer-Message", "<3 Team Tomodachi"));
+
             // Enable Swagger Middleware
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -128,7 +137,11 @@ namespace GakkoServices.APIGateway
             app.UseAuthentication();
 
             // Enable CORS
-            app.UseCors(Startup.CORS_POLICY);
+            app.UseCors(
+                options => options.AllowAnyOrigin()//.WithOrigins("http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+            );
 
             // Setup MVC with a Default Route
             app.UseMvc();

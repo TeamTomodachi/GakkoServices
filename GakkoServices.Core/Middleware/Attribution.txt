@@ -1,0 +1,2 @@
+﻿https://andrewlock.net/adding-default-security-headers-in-asp-net-core/
+https://github.com/andrewlock/blog-examples/tree/master/adding-default-security-headers/src/AddingDefaultSecurityHeaders/Middleware

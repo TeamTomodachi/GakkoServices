@@ -28,10 +28,12 @@ namespace GakkoServices.APIGateway.Controllers.API
 
         [EnableCors]
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GraphQLQuery query)
+        public async Task<IActionResult> Get([FromQuery] string query)
         {
-            if (query == null) { throw new ArgumentNullException(nameof(query)); }
-            return await PreformQuery(query);
+            if (string.IsNullOrWhiteSpace(query)) { throw new ArgumentNullException(nameof(query)); }
+
+            var graphQLQuery = new GraphQLQuery(query);
+            return await PreformQuery(graphQLQuery);
         }
 
         [EnableCors]

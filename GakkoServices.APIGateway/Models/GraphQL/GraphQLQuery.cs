@@ -12,5 +12,11 @@ namespace GakkoServices.APIGateway.Models.GraphQL
         public string NamedQuery { get; set; }
         public string Query { get; set; }
         public JObject Variables { get; set; }
+
+        public GraphQLQuery() { }
+        public GraphQLQuery(string query)
+        {
+            Query = query;
+        }
     }
 }

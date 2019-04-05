@@ -75,17 +75,17 @@ namespace GakkoServices.AuthServer
 
             // Add Cors
             // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
-            services.AddCors(options =>
-            {
-                options.AddPolicy(Startup.CORS_POLICY, policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
-            });
-            services.AddCors();
+            // services.AddCors(options =>
+            // {
+            //     options.AddPolicy(Startup.CORS_POLICY, policy =>
+            //     {
+            //         policy
+            //             .AllowAnyOrigin()
+            //             .AllowAnyHeader()
+            //             .AllowAnyMethod();
+            //     });
+            // });
+            // services.AddCors();
 
             // Add MVC
             services.AddMvc()
@@ -242,12 +242,12 @@ namespace GakkoServices.AuthServer
             });
 
             // Enable CORS
-            app.UseCors(Startup.CORS_POLICY);
-            app.UseCors(
-                options => options.AllowAnyOrigin()//.WithOrigins("http://localhost:3000")
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-            );
+            // app.UseCors(Startup.CORS_POLICY);
+            // app.UseCors(
+            //     options => options.AllowAnyOrigin()//.WithOrigins("http://localhost:3000")
+            //     .AllowAnyMethod()
+            //     .AllowAnyHeader()
+            // );
 
             // Setup our pipeline to use Static Files...
             app.UseStaticFiles();

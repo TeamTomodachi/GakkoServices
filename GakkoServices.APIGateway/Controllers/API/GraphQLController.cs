@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GakkoServices.APIGateway.Controllers.API
 {
-    [EnableCors]
+    // [EnableCors(Startup.CORS_POLICY)]
     [Route("api/[controller]")]
     [ApiController]
     public class GraphQLController : ControllerBase
@@ -26,7 +26,7 @@ namespace GakkoServices.APIGateway.Controllers.API
             m_documentExecuter = documentExecuter;
         }
 
-        [EnableCors]
+        [EnableCors(Startup.CORS_POLICY)]
         [HttpGet]
         public async Task<IActionResult> Get( [FromQuery] string query)
         {
@@ -36,7 +36,7 @@ namespace GakkoServices.APIGateway.Controllers.API
             return await PreformQuery(graphQLQuery);
         }
 
-        [EnableCors]
+        // [EnableCors(Startup.CORS_POLICY)]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GraphQLQuery query)
         {

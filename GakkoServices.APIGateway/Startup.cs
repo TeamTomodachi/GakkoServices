@@ -41,24 +41,24 @@ namespace GakkoServices.APIGateway
         public void ConfigureServices(IServiceCollection services)
         {
             // Add Cors
-            services.AddCors(options =>
-            {
-                options.AddPolicy(Startup.CORS_POLICY, policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
-            });
-            services.AddCors();
+            // services.AddCors(options =>
+            // {
+            //     options.AddPolicy(Startup.CORS_POLICY, policy =>
+            //     {
+            //         policy
+            //             .AllowAnyOrigin()
+            //             .AllowAnyHeader()
+            //             .AllowAnyMethod();
+            //     });
+            // });
+            // services.AddCors();
 
             // Add MVCCore
             services.AddMvcCore()
                 .AddApiExplorer()
                 .AddAuthorization()
                 .AddJsonFormatters()
-                .AddCors()
+                // .AddCors()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Setup Authentication
@@ -134,12 +134,12 @@ namespace GakkoServices.APIGateway
             app.UseGraphiQl($"/graphiql", $"/{SERVICE_ENDPOINT_REWRITE}/api/graphql");
 
             // Enable CORS
-            app.UseCors(Startup.CORS_POLICY);
-            app.UseCors(
-                options => options.AllowAnyOrigin()//.WithOrigins("http://localhost:3000")
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-            );
+            // app.UseCors(Startup.CORS_POLICY);
+            // app.UseCors(
+            //     options => options.AllowAnyOrigin()//.WithOrigins("http://localhost:3000")
+            //     .AllowAnyMethod()
+            //     .AllowAnyHeader()
+            // );
 
             // Use Authentication
             app.UseAuthentication();

@@ -19,7 +19,7 @@ using RawRabbit;
 
 namespace GakkoServices.AuthServer.Controllers
 {
-    [EnableCors]
+    // [EnableCors(Startup.CORS_POLICY)]
     [Route("api/[controller]")]
     [ApiController]
     public class UserAccountController : ControllerBase
@@ -40,7 +40,7 @@ namespace GakkoServices.AuthServer.Controllers
         /// </summary>
         /// <param name="item">A UserCreate containing Username, Email and Password</param>
         /// <returns>A success message, or errors</returns>
-        [EnableCors]
+        // [EnableCors(Startup.CORS_POLICY)]
         [HttpPost]
         public async Task<IActionResult> RegisterNewUser([FromBody] UserCreate item)
         {

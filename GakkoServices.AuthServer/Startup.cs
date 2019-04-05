@@ -32,6 +32,7 @@ using GakkoServices.Core.Services;
 using System.Net;
 using IdentityServer4.Stores;
 using IdentityServer4.EntityFramework.Stores;
+using GakkoServices.AuthServer.BackgroundServices;
 
 namespace GakkoServices.AuthServer
 {
@@ -202,6 +203,7 @@ namespace GakkoServices.AuthServer
 
             // Additional Configuration
             services.AddHttpContextAccessor();
+            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, MessageHandlerService>();
             services.AddSingleton<ContextServiceLocator>();
         }
 

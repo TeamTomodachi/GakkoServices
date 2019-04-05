@@ -11,8 +11,16 @@ namespace GakkoServices.APIGateway.Models.GraphQL
 {
     public class APIGatewayQuery : ObjectGraphType
     {
-        public APIGatewayQuery(IBusClient queue)
+        public APIGatewayQuery(IBusClient queue, QueueHelpers helpers)
         {
+            FieldAsync<ProfileType>(
+                "me",
+                resolve: async context =>
+                {
+                    var userId = (await helpers.AuthenticateFromContext(context)).UserId;
+                    return helpers.GetProfileFromAccountId(userId);
+                }
+            );
             FieldAsync<ProfileType>(
                 "profile",
                 arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),

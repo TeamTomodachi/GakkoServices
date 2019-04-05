@@ -28,32 +28,33 @@ namespace GakkoServices.APIGateway.Controllers.API
 
         [EnableCors(Startup.CORS_POLICY)]
         [HttpGet]
-        public async Task<IActionResult> Get( [FromQuery] string query)
+        public async Task<IActionResult> Get([FromQuery] string query, [FromHeader] string token)
         {
             if (string.IsNullOrWhiteSpace(query)) { throw new ArgumentNullException(nameof(query)); }
 
             var graphQLQuery = new GraphQLQuery(query);
-            return await PreformQuery(graphQLQuery);
+            return await PreformQuery(graphQLQuery, token);
         }
 
         // [EnableCors(Startup.CORS_POLICY)]
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] GraphQLQuery query)
+        public async Task<IActionResult> Post([FromBody] GraphQLQuery query, [FromHeader] string token)
         {
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
-            return await PreformQuery(query);
+            return await PreformQuery(query, token);
         }
 
-        private async Task<IActionResult> PreformQuery(GraphQLQuery query)
+        private async Task<IActionResult> PreformQuery(GraphQLQuery query, string token)
         {
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             var inputs = query.Variables.ToInputs();
             var executionOptions = new ExecutionOptions
             {
+                UserContext = new { token },
                 Schema = m_schema,
                 Query = query.Query,
                 Inputs = inputs,
-                ExposeExceptions = true,
+                // ExposeExceptions = true,
             };
 
             var result = await m_documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);

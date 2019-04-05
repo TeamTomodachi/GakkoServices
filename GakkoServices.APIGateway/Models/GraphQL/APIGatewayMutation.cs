@@ -11,20 +11,21 @@ namespace GakkoServices.APIGateway.Models.GraphQL
 {
     public class APIGatewayMutation : ObjectGraphType
     {
-        public APIGatewayMutation(IBusClient queue)
+        public APIGatewayMutation(IBusClient queue, QueueHelpers helpers)
         {
             FieldAsync<ProfileType>(
-                "updateProfile",
+                "updateMe",
                 arguments: new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "id" },
                     new QueryArgument<NonNullGraphType<ProfileInputType>> { Name = "profile" }
                 ),
                 resolve: async context =>
                 {
+                    Guid userId = (await helpers.AuthenticateFromContext(context)).UserId;
                     var newProfile = context.Arguments["profile"] as Dictionary<string, object>;
                     Func<string, object> getOrNull = prop => newProfile.ContainsKey(prop) ? newProfile[prop] : null;
 
-                    Guid id = Guid.Parse(context.GetArgument<string>("id"));
+                    Guid id = (await helpers.GetProfileFromAccountId(userId)).Id;
+
                     var result = await queue.RequestAsync<ProfileUpdateRequestMessage, ResultMessage>(
                         new ProfileUpdateRequestMessage {
                             Id = id,
@@ -40,24 +41,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         throw (Exception) result.data;
                     }
 
-                    var result2 = await queue.RequestAsync<ProfileRequestMessage, ResultMessage>(
-                        new ProfileRequestMessage {
-                            Id = id,
-                        }
-                    );
-                    var profileData = result2.data as ProfileData;
-                    return new Profile {
-                        Id = profileData.Id,
-                        Username = profileData.Username,
-                        TrainerCode = profileData.TrainerCode,
-                        Level = profileData.Level,
-                        TeamId = profileData.TeamId,
-                        FeaturedPokemon = {
-                            profileData.FeaturedPokemon1,
-                            profileData.FeaturedPokemon2,
-                            profileData.FeaturedPokemon3,
-                        },
-                    };
+                    return await helpers.GetProfileFromAccountId(userId);
                 }
             );
         }

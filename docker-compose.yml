@@ -52,6 +52,7 @@ services:
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
       traefik.frontend.rule: PathPrefix:/api-gateway
       traefik.port: 80
+      traefik.frontend.headers.customResponseHeaders: Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:PUT,GET,POST,DELETE,OPTIONS||Access-Control-Allow-Headers:origin,x-requested-with,content-type
 
 
   AuthServer:
@@ -74,6 +75,7 @@ services:
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
       traefik.frontend.rule: PathPrefix:/auth
       traefik.port: 80
+      traefik.frontend.headers.customResponseHeaders: Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:PUT,GET,POST,DELETE,OPTIONS||Access-Control-Allow-Headers:origin,x-requested-with,content-type
 
 
   AuthServerDB:

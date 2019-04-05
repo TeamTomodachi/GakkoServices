@@ -12,6 +12,7 @@ using IdentityServer4.Quickstart.UI;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GakkoServices.AuthServer.Controllers
 {
+    [EnableCors]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
@@ -40,6 +42,7 @@ namespace GakkoServices.AuthServer.Controllers
         /// </summary>
         /// <param name="item">A UserLogin containing Username and Password</param>
         /// <returns>The user login token or errors</returns>
+        [EnableCors]
         [HttpPost]
         public async Task<IActionResult> LoginCredentials([FromBody] UserLogin item)
         {

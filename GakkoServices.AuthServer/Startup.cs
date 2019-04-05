@@ -76,18 +76,19 @@ namespace GakkoServices.AuthServer
             // http://docs.identityserver.io/en/latest/quickstarts/6_javascript_client.html
             services.AddCors(options =>
             {
-                options.AddPolicy(Startup.CORS_POLICY, builderPolicy =>
+                options.AddPolicy(Startup.CORS_POLICY, policy =>
                 {
-                    builderPolicy
+                    policy
                         .AllowAnyOrigin()
                         .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
+                        .AllowAnyMethod();
                 });
             });
+            services.AddCors();
 
             // Add MVC
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Configure Swagger
             services.AddSwaggerGen(c =>
@@ -231,12 +232,6 @@ namespace GakkoServices.AuthServer
                 app.UseHsts();
             }
 
-            // Setup our pipeline to use Static Files...
-            app.UseStaticFiles();
-
-            // Load in IdentityServer Middleware
-            app.UseIdentityServer();
-
             // Enable Swagger Middleware
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -246,6 +241,17 @@ namespace GakkoServices.AuthServer
 
             // Enable CORS
             app.UseCors(Startup.CORS_POLICY);
+            app.UseCors(
+                options => options.AllowAnyOrigin()//.WithOrigins("http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+            );
+
+            // Setup our pipeline to use Static Files...
+            app.UseStaticFiles();
+
+            // Load in IdentityServer Middleware
+            app.UseIdentityServer();
 
             // Setup MVC with a Default Route
             app.UseMvcWithDefaultRoute();

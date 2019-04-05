@@ -13,16 +13,16 @@ namespace GakkoServices.APIGateway.Models.GraphQL
     {
         public APIGatewayQuery(IBusClient queue)
         {
-            Field<ProfileType>(
+            FieldAsync<ProfileType>(
                 "profile",
                 arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
-                resolve: context => {
-                    var responseTask = queue.RequestAsync<ProfileRequestMessage, ResultMessage>(
+                resolve: async context => {
+                    var responseTask = await queue.RequestAsync<ProfileRequestMessage, ResultMessage>(
                         new ProfileRequestMessage {
                             Id = Guid.Parse(context.GetArgument<string>("id")),
                         }
                     );
-                    var profileData = responseTask.Result.data as ProfileData;
+                    var profileData = responseTask.data as ProfileData;
                     return new Profile {
                         Id = profileData.Id,
                         Username = profileData.Username,
@@ -38,14 +38,14 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
-            Field<PokemonType>(
+            FieldAsync<PokemonType>(
                 "pokemon",
                 arguments: new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "id" },
                     new QueryArgument<StringGraphType> { Name = "name" },
                     new QueryArgument<IntGraphType> { Name = "pokedexNumber" }
                 ),
-                resolve: context => {
+                resolve: async context => {
                     PokemonRequestMessage message;
                     if (context.HasArgument("id"))
                     {
@@ -68,8 +68,8 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                     else {
                         throw new ArgumentNullException();
                     }
-                    var responseTask = queue.RequestAsync<PokemonRequestMessage, ResultMessage>(message);
-                    var pokemonData = responseTask.Result.data as PokemonData;
+                    var responseTask = await queue.RequestAsync<PokemonRequestMessage, ResultMessage>(message);
+                    var pokemonData = responseTask.data as PokemonData;
                     return new Pokemon {
                         Id = pokemonData.Id,
                         Name = pokemonData.Name,
@@ -80,16 +80,16 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
-            Field<TeamType>(
+            FieldAsync<TeamType>(
                 "team",
                 arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
-                resolve: context => {
-                    var responseTask = queue.RequestAsync<TeamRequestMessage, ResultMessage>(
+                resolve: async context => {
+                    var responseTask = await queue.RequestAsync<TeamRequestMessage, ResultMessage>(
                         new TeamRequestMessage {
                             Id = Guid.Parse(context.GetArgument<string>("id")),
                         }
                     );
-                    var teamData = responseTask.Result.data as TeamData;
+                    var teamData = responseTask.data as TeamData;
                     return new Team {
                         Id = teamData.Id,
                         Name = teamData.Name,
@@ -99,13 +99,13 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
-            Field<ListGraphType<TeamType>>(
+            FieldAsync<ListGraphType<TeamType>>(
                 "teams",
-                resolve: context => {
-                    var responseTask = queue.RequestAsync<TeamsRequestMessage, ResultMessage>(
+                resolve: async context => {
+                    var responseTask = await queue.RequestAsync<TeamsRequestMessage, ResultMessage>(
                         new TeamsRequestMessage()
                     );
-                    var teamDatas = responseTask.Result.data as List<TeamData>;
+                    var teamDatas = responseTask.data as List<TeamData>;
                     var teams = new List<Team>();
                     foreach (var teamData in teamDatas) {
                         teams.Add(new Team {

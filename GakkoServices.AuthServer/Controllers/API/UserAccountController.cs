@@ -49,8 +49,16 @@ namespace GakkoServices.AuthServer.Controllers
             {
                 _logger.LogInformation(3, $"User({result.CreatedUser.Id}): ${item.Username}, created a new account with password.");
 
-                // Return with a success message
-                return new ObjectResult($"User was successfully created");
+                var user = result.CreatedUser;
+                var userClaims = await _accountService._userManager.GetClaimsAsync(user);
+                dynamic d = new {
+                    message=$"User was successfully created",
+                    claims=userClaims,
+                    token=result.Token.Token,
+                    expiryDate=result.Token.ExpiryDateTimeUtc,
+                    loginDate=result.Token.LoginDateTimeUtc
+                };
+                return new ObjectResult(d);
             }
 
             // There was an error

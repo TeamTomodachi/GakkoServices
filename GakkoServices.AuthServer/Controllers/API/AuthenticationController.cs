@@ -52,6 +52,7 @@ namespace GakkoServices.AuthServer.Controllers
                 var user = loginResult.LoggedInUser;
                 var userClaims = await _accountService._userManager.GetClaimsAsync(user);
                 dynamic d = new {
+                    message=$"User has successfully logged in",
                     claims=userClaims,
                     token=loginResult.Token.Token,
                     expiryDate=loginResult.Token.ExpiryDateTimeUtc,

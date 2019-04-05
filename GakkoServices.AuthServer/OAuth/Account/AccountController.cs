@@ -138,7 +138,7 @@ namespace IdentityServer4.Quickstart.UI
                     }
                 }
 
-                await _accountService._events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
+                // Invalid Credentials
                 ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
             }
 

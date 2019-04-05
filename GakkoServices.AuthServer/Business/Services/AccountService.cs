@@ -61,6 +61,10 @@ namespace GakkoServices.AuthServer.Business.Services
                 loggedInUser = await _userManager.FindByNameAsync(item.Username);
                 await _events.RaiseAsync(new UserLoginSuccessEvent(loggedInUser.UserName, loggedInUser.Id.ToString(), loggedInUser.UserName));
             }
+            else
+            {
+                await _events.RaiseAsync(new UserLoginFailureEvent(item.Username, "invalid credentials"));
+            }
 
             return new UserLoginArgs(result, loggedInUser);
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GakkoServices.AuthServer.Business.Services;
 using GakkoServices.AuthServer.Models;
 using GakkoServices.AuthServer.Models.Authentication;
 using GakkoServices.AuthServer.Models.UserAccount;
@@ -23,30 +24,15 @@ namespace GakkoServices.AuthServer.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly IClientStore _clientStore;
-        private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly IEventService _events;
+        private readonly AccountService _accountService;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
 
-        public AuthenticationController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IIdentityServerInteractionService interaction,
-            IClientStore clientStore,
-            IAuthenticationSchemeProvider schemeProvider,
-            IEventService events,
-            ILoggerFactory loggerFactory)
+        public AuthenticationController(AccountService accountService, ILoggerFactory loggerFactory)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _interaction = interaction;
-            _clientStore = clientStore;
-            _schemeProvider = schemeProvider;
-            _events = events;
-            _logger = loggerFactory.CreateLogger<UserAccountController>();
+            _accountService = accountService;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<AuthenticationController>();
         }
 
         /// <summary>
@@ -57,20 +43,15 @@ namespace GakkoServices.AuthServer.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginCredentials([FromBody] UserLogin item)
         {
-            // TODO: Look into implementing a Lockout
-            var result = await _signInManager.PasswordSignInAsync(item.Username, item.Password, true, false);
-            if (result.Succeeded)
+            var loginResult = await _accountService.LoginUser(item);
+            if (loginResult.Successful)
             {
-                var user = await _userManager.FindByNameAsync(item.Username);
-                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
-
-                var userClaims = await _userManager.GetClaimsAsync(user);
+                var user = loginResult.LoggedInUser;
+                var userClaims = await _accountService._userManager.GetClaimsAsync(user);
                 return new ObjectResult(userClaims);
             }
 
-            await _events.RaiseAsync(new UserLoginFailureEvent(item.Username, "invalid credentials"));
             return new ObjectResult(AccountOptions.InvalidCredentialsErrorMessage);
-
         }
     }
 }

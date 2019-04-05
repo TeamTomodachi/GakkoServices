@@ -41,16 +41,16 @@ namespace GakkoServices.APIGateway
         public void ConfigureServices(IServiceCollection services)
         {
             // Add Cors
-            // services.AddCors(options =>
-            // {
-            //     options.AddPolicy(Startup.CORS_POLICY, policy =>
-            //     {
-            //         policy
-            //             .AllowAnyOrigin()
-            //             .AllowAnyHeader()
-            //             .AllowAnyMethod();
-            //     });
-            // });
+            services.AddCors(options =>
+            {
+                options.AddPolicy(Startup.CORS_POLICY, policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
             services.AddCors();
 
             // Add MVCCore
@@ -134,7 +134,7 @@ namespace GakkoServices.APIGateway
             app.UseGraphiQl($"/graphiql", $"/{SERVICE_ENDPOINT_REWRITE}/api/graphql");
 
             // Enable CORS
-            // app.UseCors(Startup.CORS_POLICY);
+            app.UseCors(Startup.CORS_POLICY);
             app.UseCors(
                 options => options.AllowAnyOrigin()//.WithOrigins("http://localhost:3000")
                 .AllowAnyMethod()

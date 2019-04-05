@@ -10,6 +10,7 @@ using RawRabbit.Context;
 using GakkoServices.Microservices.ProfileService.Models;
 using GakkoServices.Core.Services;
 using GakkoServices.Core.Models;
+using Newtonsoft.Json;
 
 namespace GakkoServices.Microservices.ProfileService.BackgroundServices
 {
@@ -52,7 +53,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 else {
                     throw new ArgumentNullException();
                 }
-                
+
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,
                     data = new ProfileData {

@@ -39,7 +39,7 @@ namespace GakkoServices.AuthServer.BackgroundServices
             using (var scope = _scopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<AspIdentityDbContext>();
-                var token = dbContext.AuthTokens.Where(x => x.Token == message.AuthToken).FirstOrDefault();
+                var token = await dbContext.AuthTokens.Where(x => x.Token == message.AuthToken).FirstOrDefaultAsync();
                 var currentUtc = DateTime.UtcNow;
 
                 if (token == null || token.ExpiryDateTimeUtc == null || token.ExpiryDateTimeUtc < currentUtc) {

@@ -29,6 +29,7 @@ using RawRabbit;
 using RawRabbit.vNext;
 using GakkoServices.AuthServer.Business.Services;
 using GakkoServices.Core.Services;
+using GakkoServices.Core.Helpers;
 using System.Net;
 using IdentityServer4.Stores;
 using IdentityServer4.EntityFramework.Stores;
@@ -189,6 +190,11 @@ namespace GakkoServices.AuthServer
                     .AddJsonFile("rawrabbit.json")
                     .AddEnvironmentVariables("RawRabbit:");
             });
+
+            _logger.LogInformation("Waiting for rabbitmq...");
+            // Block until the rabbitmq panel is online
+            NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
+            _logger.LogInformation("rabbitmq is ready");
 
             if (Environment.IsDevelopment())
             {

@@ -89,6 +89,8 @@ namespace GakkoServices.APIGateway
             NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
             _logger.LogInformation("rabbitmq is ready");
 
+            services.AddSingleton<QueueHelpers>();
+
             // Additional Configuration
             services.AddHttpContextAccessor();
             services.AddSingleton<ContextServiceLocator>();

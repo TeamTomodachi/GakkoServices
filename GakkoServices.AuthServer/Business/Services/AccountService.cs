@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using GakkoServices.AuthServer.Business.Models;
+using GakkoServices.AuthServer.Data.Contexts;
 using GakkoServices.AuthServer.Models;
 using GakkoServices.AuthServer.Models.Authentication;
 using GakkoServices.AuthServer.Models.UserAccount;
@@ -11,6 +13,7 @@ using IdentityServer4.Events;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -31,6 +34,7 @@ namespace GakkoServices.AuthServer.Business.Services
         public ILogger _logger { get; protected set; }
         public IBusClient _bus { get; protected set; }
         public IEmailSender _emailSender { get; protected set; }
+        public AspIdentityDbContext _identityDbContext { get; protected set; }
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
@@ -40,7 +44,8 @@ namespace GakkoServices.AuthServer.Business.Services
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
             ILoggerFactory loggerFactory,
-            IBusClient bus)
+            IBusClient bus,
+            AspIdentityDbContext identityDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -50,6 +55,7 @@ namespace GakkoServices.AuthServer.Business.Services
             _events = events;
             _logger = loggerFactory?.CreateLogger<AccountService>();
             _bus = bus;
+            _identityDbContext = identityDbContext;
         }
 
         public async Task<UserLoginArgs> LoginUser(UserLogin item)
@@ -59,6 +65,7 @@ namespace GakkoServices.AuthServer.Business.Services
             if (result.Succeeded)
             {
                 loggedInUser = await _userManager.FindByNameAsync(item.Username);
+                await CreateAuthToken(loggedInUser, true);
                 await _events.RaiseAsync(new UserLoginSuccessEvent(loggedInUser.UserName, loggedInUser.Id.ToString(), loggedInUser.UserName));
             }
             else
@@ -91,11 +98,47 @@ namespace GakkoServices.AuthServer.Business.Services
                 if (signInUser)
                 {
                     await _signInManager.SignInAsync(newUser, isPersistent: false);
+                    await CreateAuthToken(newUser, true);
                 }
             }
 
             // Return the Successful/Failed Result
             return new RegisterNewUserArgs(result, newUser);
+        }
+
+        public async Task<AuthToken> CreateAuthToken(ApplicationUser user, bool addToDb)
+        {
+            AuthToken authToken = new AuthToken();
+            authToken.LoginDateTimeUtc = DateTime.UtcNow;
+            authToken.User = user;
+            authToken.ExpiryDateTimeUtc = authToken.LoginDateTimeUtc + TimeSpan.FromDays(7);
+            authToken.Token = HashString($"{user.Id}{authToken.LoginDateTimeUtc}{user.SecurityStamp}");
+
+            if (addToDb) {
+                await _identityDbContext.AddAsync(authToken);
+                await _identityDbContext.SaveChangesAsync();
+            }
+            
+            return authToken;
+        }
+
+        private string HashString(string item) 
+        {
+            // generate a 128-bit salt using a secure PRNG
+            byte[] salt = new byte[64 / 8];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(salt);
+            }
+ 
+            // derive a 256-bit subkey (use HMACSHA1 with 10,000 iterations)
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: item,
+                salt: salt,
+                prf: KeyDerivationPrf.HMACSHA1,
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8));
+            return hashed;
         }
     }
 }

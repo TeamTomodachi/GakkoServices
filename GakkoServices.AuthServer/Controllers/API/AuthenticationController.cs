@@ -51,7 +51,13 @@ namespace GakkoServices.AuthServer.Controllers
             {
                 var user = loginResult.LoggedInUser;
                 var userClaims = await _accountService._userManager.GetClaimsAsync(user);
-                return new ObjectResult(userClaims);
+                dynamic d = new {
+                    claims=userClaims,
+                    token=loginResult.Token.Token,
+                    expiryDate=loginResult.Token.ExpiryDateTimeUtc,
+                    loginDate=loginResult.Token.LoginDateTimeUtc
+                };
+                return new ObjectResult(d);
             }
 
             return new ObjectResult(AccountOptions.InvalidCredentialsErrorMessage);

@@ -61,11 +61,12 @@ namespace GakkoServices.AuthServer.Business.Services
         public async Task<UserLoginArgs> LoginUser(UserLogin item)
         {
             ApplicationUser loggedInUser = null;
+            AuthToken token = null;
             var result = await _signInManager.PasswordSignInAsync(item.Username, item.Password, item.RememberLogin, lockoutOnFailure: true);
             if (result.Succeeded)
             {
                 loggedInUser = await _userManager.FindByNameAsync(item.Username);
-                await CreateAuthToken(loggedInUser, true);
+                token = await CreateAuthToken(loggedInUser, true);
                 await _events.RaiseAsync(new UserLoginSuccessEvent(loggedInUser.UserName, loggedInUser.Id.ToString(), loggedInUser.UserName));
             }
             else
@@ -73,12 +74,13 @@ namespace GakkoServices.AuthServer.Business.Services
                 await _events.RaiseAsync(new UserLoginFailureEvent(item.Username, "invalid credentials"));
             }
 
-            return new UserLoginArgs(result, loggedInUser);
+            return new UserLoginArgs(result, loggedInUser, token);
         }
 
         public async Task<RegisterNewUserArgs> RegisterNewUser(UserCreate item, bool signInUser)
         {
             // Create the User
+            AuthToken token = null;
             var newUser = new ApplicationUser { UserName = item.Username, Email = item.Email };
             var result = await _userManager.CreateAsync(newUser, item.Password);
             if (result.Succeeded)
@@ -98,12 +100,12 @@ namespace GakkoServices.AuthServer.Business.Services
                 if (signInUser)
                 {
                     await _signInManager.SignInAsync(newUser, isPersistent: false);
-                    await CreateAuthToken(newUser, true);
+                    token = await CreateAuthToken(newUser, true);
                 }
             }
 
             // Return the Successful/Failed Result
-            return new RegisterNewUserArgs(result, newUser);
+            return new RegisterNewUserArgs(result, newUser, token);
         }
 
         public async Task<AuthToken> CreateAuthToken(ApplicationUser user, bool addToDb)

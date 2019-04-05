@@ -11,12 +11,14 @@ namespace GakkoServices.AuthServer.Business.Models
     {
         public IdentityResult Result { get; set; }
         public ApplicationUser CreatedUser { get; set; }
+        public AuthToken Token { get; set; }
         public bool Successful { get { return Result.Succeeded; } }
 
-        public RegisterNewUserArgs(IdentityResult result, ApplicationUser createdUser)
+        public RegisterNewUserArgs(IdentityResult result, ApplicationUser createdUser, AuthToken token)
         {
             Result = result;
             CreatedUser = createdUser;
+            Token = token;
         }
     }
 }

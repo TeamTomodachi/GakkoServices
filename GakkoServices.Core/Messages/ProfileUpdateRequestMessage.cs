@@ -7,7 +7,6 @@ namespace GakkoServices.Core.Messages
         // TODO: Identifier and partial profile object maybe?
 
         public Guid Id;
-        public Guid? UserAccountId;
         public Guid? PogoTeamId;
 
         public string PogoUsername;

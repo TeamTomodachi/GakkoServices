@@ -17,8 +17,7 @@ namespace GakkoServices.AuthServer.Models
         [Required]
         public DateTime LoginDateTimeUtc { get; set; }
 
-        [Required]
-        public DateTime ExpiryDateTimeUtc { get; set; }
+        public DateTime? ExpiryDateTimeUtc { get; set; }
 
         [Required]
         public ApplicationUser User { get; set; }

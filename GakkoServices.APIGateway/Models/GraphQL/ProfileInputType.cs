@@ -7,11 +7,13 @@ namespace GakkoServices.APIGateway.Models.GraphQL
         public ProfileInputType()
         {
             Name = "ProfileInput";
-            Field<StringGraphType>("userName");
+            Field<StringGraphType>("username");
             Field<StringGraphType>("trainerCode");
             Field<IntGraphType>("gender");
             Field<StringGraphType>("teamId");
-            Field<ListGraphType<PokemonType>>("pokemen");
+            Field<StringGraphType>("featuredPokemon1");
+            Field<StringGraphType>("featuredPokemon2");
+            Field<StringGraphType>("featuredPokemon3");
         }
     }
 }

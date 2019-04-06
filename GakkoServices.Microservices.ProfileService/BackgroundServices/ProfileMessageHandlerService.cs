@@ -51,7 +51,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                     profile = dbContext.PogoProfiles.Where(x => x.PogoUsername == message.Username).FirstOrDefault();
                 }
                 else {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("GetProfile called with no Id, UserAccountId or Username");
                 }
 
                 return new ResultMessage {

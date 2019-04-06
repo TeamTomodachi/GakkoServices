@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RawRabbit;
 
@@ -35,6 +37,7 @@ namespace GakkoServices.AuthServer.Business.Services
         public IBusClient _bus { get; protected set; }
         public IEmailSender _emailSender { get; protected set; }
         public AspIdentityDbContext _identityDbContext { get; protected set; }
+        private IServiceScopeFactory _scopeFactory { get; set; }
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
@@ -45,7 +48,8 @@ namespace GakkoServices.AuthServer.Business.Services
             IEventService events,
             ILoggerFactory loggerFactory,
             IBusClient bus,
-            AspIdentityDbContext identityDbContext)
+            AspIdentityDbContext identityDbContext,
+            IServiceScopeFactory scopeFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -56,6 +60,7 @@ namespace GakkoServices.AuthServer.Business.Services
             _logger = loggerFactory?.CreateLogger<AccountService>();
             _bus = bus;
             _identityDbContext = identityDbContext;
+            _scopeFactory = scopeFactory;
         }
 
         public async Task<UserLoginArgs> LoginUser(UserLogin item)
@@ -106,6 +111,23 @@ namespace GakkoServices.AuthServer.Business.Services
 
             // Return the Successful/Failed Result
             return new RegisterNewUserArgs(result, newUser, token);
+        }
+
+        public async Task<ValidateAuthTokenArgs> ValidateAuthToken(string authToken) {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AspIdentityDbContext>();
+                var token = await dbContext.AuthTokens
+                    .Where(x => x.Token == authToken)
+                    .FirstOrDefaultAsync();
+                var currentUtc = DateTime.UtcNow;
+
+                if (token == null || (token.ExpiryDateTimeUtc != null && token.ExpiryDateTimeUtc < currentUtc)) {
+                     return new ValidateAuthTokenArgs(null, false);
+                } 
+
+                return new ValidateAuthTokenArgs(token, true);
+            }
         }
 
         public async Task<AuthToken> CreateAuthToken(ApplicationUser user, bool addToDb)

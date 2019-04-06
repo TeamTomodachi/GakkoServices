@@ -63,5 +63,20 @@ namespace GakkoServices.AuthServer.Controllers
 
             return new ObjectResult(AccountOptions.InvalidCredentialsErrorMessage);
         }
+
+        /// <summary>
+        /// Validates a given AuthToken is active
+        /// </summary>
+        /// <param name="item">An Authentication Token</param>
+        /// <returns>Whether the AuthToken is valid</returns>
+        // [EnableCors(Startup.CORS_POLICY)]
+        [HttpPost]
+        public async Task<IActionResult> ValidateToken([FromHeader] string token) {
+            var validationArgs = await _accountService.ValidateAuthToken(token);
+            if (!validationArgs.IsValid) {
+                validationArgs.Token = null;
+            }
+            return new ObjectResult(validationArgs);
+        }
     }
 }

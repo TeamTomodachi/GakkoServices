@@ -114,20 +114,16 @@ namespace GakkoServices.AuthServer.Business.Services
         }
 
         public async Task<ValidateAuthTokenArgs> ValidateAuthToken(string authToken) {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<AspIdentityDbContext>();
-                var token = await dbContext.AuthTokens
-                    .Where(x => x.Token == authToken)
-                    .FirstOrDefaultAsync();
-                var currentUtc = DateTime.UtcNow;
+            var token = await _identityDbContext.AuthTokens
+                .Where(x => x.Token == authToken)
+                .FirstOrDefaultAsync();
+            var currentUtc = DateTime.UtcNow;
 
-                if (token == null || (token.ExpiryDateTimeUtc != null && token.ExpiryDateTimeUtc < currentUtc)) {
-                     return new ValidateAuthTokenArgs(null, false);
-                } 
+            if (token == null || (token.ExpiryDateTimeUtc != null && token.ExpiryDateTimeUtc < currentUtc)) {
+                    return new ValidateAuthTokenArgs(null, false);
+            } 
 
-                return new ValidateAuthTokenArgs(token, true);
-            }
+            return new ValidateAuthTokenArgs(token, true);
         }
 
         public async Task<AuthToken> CreateAuthToken(ApplicationUser user, bool addToDb)

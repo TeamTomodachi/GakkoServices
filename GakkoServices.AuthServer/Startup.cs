@@ -191,11 +191,6 @@ namespace GakkoServices.AuthServer
                     .AddEnvironmentVariables("RawRabbit:");
             });
 
-            _logger.LogInformation("Waiting for rabbitmq...");
-            // Block until the rabbitmq panel is online
-            NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
-            _logger.LogInformation("rabbitmq is ready");
-
             if (Environment.IsDevelopment())
             {
             }
@@ -254,6 +249,11 @@ namespace GakkoServices.AuthServer
             //     .AllowAnyMethod()
             //     .AllowAnyHeader()
             // );
+
+            _logger.LogInformation("Waiting for rabbitmq...");
+            // Block until the rabbitmq panel is online
+            NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
+            _logger.LogInformation("rabbitmq is ready");
 
             // Setup our pipeline to use Static Files...
             app.UseStaticFiles();

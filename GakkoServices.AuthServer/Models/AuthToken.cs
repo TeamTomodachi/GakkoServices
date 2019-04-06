@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,7 +21,10 @@ namespace GakkoServices.AuthServer.Models
         public DateTime? ExpiryDateTimeUtc { get; set; }
 
         [Required]
-        public ApplicationUser User { get; set; }
+        [ForeignKey(nameof(ApplicationUser))]
+        public Guid UserId { get; set; }
 
+        [NotMapped]
+        public virtual ApplicationUser User { get; set; }
     }
 }

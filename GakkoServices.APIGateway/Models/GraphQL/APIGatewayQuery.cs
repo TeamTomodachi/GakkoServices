@@ -18,7 +18,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 resolve: async context =>
                 {
                     var userId = (await helpers.AuthenticateFromContext(context)).UserId;
-                    return helpers.GetProfileFromAccountId(userId);
+                    return await helpers.GetProfileFromAccountId(userId);
                 }
             );
             FieldAsync<ProfileType>(

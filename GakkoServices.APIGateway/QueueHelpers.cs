@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using RawRabbit;
 using System.Threading.Tasks;
 using GraphQL.Types;
@@ -30,19 +31,17 @@ namespace GakkoServices.APIGateway
                     UserAccountId = id,
                 }
             )).data as ProfileData;
-            return new Profile {
-                Id = profileData.Id,
-                Username = profileData.Username,
-                TrainerCode = profileData.TrainerCode,
-                Level = profileData.Level,
-                TeamId = profileData.TeamId,
-                Gender = profileData.Gender,
-                FeaturedPokemon = {
-                    profileData.FeaturedPokemon1,
-                    profileData.FeaturedPokemon2,
-                    profileData.FeaturedPokemon3,
-                },
-            };
+            Profile p = new Profile();
+            p.Id = profileData.Id;
+            p.Username = profileData.Username;
+            p.TrainerCode = profileData.TrainerCode;
+            p.Level = profileData.Level;
+            p.TeamId = profileData.TeamId;
+            p.FeaturedPokemon = new List<Guid>();
+            p.FeaturedPokemon.Add(profileData.FeaturedPokemon1);
+            p.FeaturedPokemon.Add(profileData.FeaturedPokemon2);
+            p.FeaturedPokemon.Add(profileData.FeaturedPokemon3);
+            return p;
         }
 
         public Task<AuthenticationData> AuthenticateFromContext(ResolveFieldContext<object> context)

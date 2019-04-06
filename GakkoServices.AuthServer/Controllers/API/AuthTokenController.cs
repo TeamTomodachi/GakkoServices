@@ -24,44 +24,32 @@ namespace GakkoServices.AuthServer.Controllers
     // [EnableCors(Startup.CORS_POLICY)]
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthTokenController : ControllerBase
     {
         private readonly AccountService _accountService;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
 
-        public AuthenticationController(AccountService accountService, ILoggerFactory loggerFactory)
+        public AuthTokenController(AccountService accountService, ILoggerFactory loggerFactory)
         {
             _accountService = accountService;
             _loggerFactory = loggerFactory;
-            _logger = loggerFactory.CreateLogger<AuthenticationController>();
+            _logger = loggerFactory.CreateLogger<AuthTokenController>();
         }
 
         /// <summary>
-        /// Attempts to sign a user into the system
+        /// Validates a given AuthToken is active
         /// </summary>
-        /// <param name="item">A UserLogin containing Username and Password</param>
-        /// <returns>The user login token or errors</returns>
+        /// <param name="item">An Authentication Token</param>
+        /// <returns>Whether the AuthToken is valid</returns>
         // [EnableCors(Startup.CORS_POLICY)]
         [HttpPost]
-        public async Task<IActionResult> LoginCredentials([FromBody] UserLogin item)
-        {
-            var loginResult = await _accountService.LoginUser(item);
-            if (loginResult.Successful)
-            {
-                var user = loginResult.LoggedInUser;
-                var userClaims = await _accountService._userManager.GetClaimsAsync(user);
-                dynamic d = new {
-                    message=$"User has successfully logged in",
-                    claims=userClaims,
-                    token=loginResult.Token.Token,
-                    expiryDate=loginResult.Token.ExpiryDateTimeUtc,
-                    loginDate=loginResult.Token.LoginDateTimeUtc
-                };
-                return new ObjectResult(d);
+        public async Task<IActionResult> ValidateToken([FromHeader] string token) {
+            var validationArgs = await _accountService.ValidateAuthToken(token);
+            if (!validationArgs.IsValid) {
+                validationArgs.Token = null;
             }
-
-            return new ObjectResult(AccountOptions.InvalidCredentialsErrorMessage);
+            return new ObjectResult(validationArgs);
         }
     }
 }

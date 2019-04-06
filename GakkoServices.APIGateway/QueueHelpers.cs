@@ -36,6 +36,7 @@ namespace GakkoServices.APIGateway
                 TrainerCode = profileData.TrainerCode,
                 Level = profileData.Level,
                 TeamId = profileData.TeamId,
+                Gender = profileData.Gender,
                 FeaturedPokemon = {
                     profileData.FeaturedPokemon1,
                     profileData.FeaturedPokemon2,

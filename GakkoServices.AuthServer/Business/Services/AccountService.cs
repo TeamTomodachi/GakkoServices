@@ -37,7 +37,7 @@ namespace GakkoServices.AuthServer.Business.Services
         public IBusClient _bus { get; protected set; }
         public IEmailSender _emailSender { get; protected set; }
         public AspIdentityDbContext _identityDbContext { get; protected set; }
-        private IServiceScopeFactory _scopeFactory { get; set; }
+        public IServiceScopeFactory _scopeFactory { get; set; }
 
         public AccountService(
             UserManager<ApplicationUser> userManager,

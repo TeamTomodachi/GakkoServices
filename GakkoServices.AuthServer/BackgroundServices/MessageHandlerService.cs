@@ -21,11 +21,9 @@ namespace GakkoServices.AuthServer.BackgroundServices
         private IServiceScopeFactory _scopeFactory;
         private IBusClient _queue;
         private ILogger _logger;
-        private AccountService _accountService;
 
-        public MessageHandlerService(IServiceScopeFactory scopeFactory, IBusClient queue, ILoggerFactory loggerFactory, AccountService accountService)
+        public MessageHandlerService(IServiceScopeFactory scopeFactory, IBusClient queue, ILoggerFactory loggerFactory)
         {
-            _accountService = accountService;
             _scopeFactory = scopeFactory;
             _queue = queue;
             _logger = loggerFactory?.CreateLogger<MessageHandlerService>();
@@ -41,7 +39,8 @@ namespace GakkoServices.AuthServer.BackgroundServices
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var tokenValidationArgs = await _accountService.ValidateAuthToken(message.AuthToken);
+                var accountService = scope.ServiceProvider.GetRequiredService<AccountService>();
+                var tokenValidationArgs = await accountService.ValidateAuthToken(message.AuthToken);
                 if (!tokenValidationArgs.IsValid) {
                      throw new Exception("Token is invalid"); 
                 }

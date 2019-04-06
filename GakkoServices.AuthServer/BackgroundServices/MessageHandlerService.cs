@@ -44,15 +44,15 @@ namespace GakkoServices.AuthServer.BackgroundServices
                     .FirstOrDefaultAsync();
                 var currentUtc = DateTime.UtcNow;
 
-                if (token == null || token.ExpiryDateTimeUtc == null || token.ExpiryDateTimeUtc < currentUtc) {
+                if (token == null || (token.ExpiryDateTimeUtc != null && token.ExpiryDateTimeUtc < currentUtc)) {
                      throw new Exception("Token is invalid"); 
                 } 
 
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,
                     data = new AuthenticationData {
-                        UserId = token.User.Id,
-                        Username = token.User.UserName,
+                        UserId = token.UserId,
+                        Username = "",
                         TokenId = token.Id,
                         Token = token.Token
                     },

@@ -113,6 +113,7 @@ namespace GakkoServices.AuthServer.Business.Services
             AuthToken authToken = new AuthToken();
             authToken.LoginDateTimeUtc = DateTime.UtcNow;
             authToken.User = user;
+            authToken.UserId = user.Id;
             authToken.ExpiryDateTimeUtc = authToken.LoginDateTimeUtc + TimeSpan.FromDays(7);
             authToken.Token = HashString($"{user.Id}{authToken.LoginDateTimeUtc}{user.SecurityStamp}");
 

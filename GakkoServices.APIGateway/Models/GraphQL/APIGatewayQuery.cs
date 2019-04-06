@@ -6,6 +6,7 @@ using GakkoServices.Core.Services;
 using GakkoServices.Core.Messages;
 using GakkoServices.Core.Models;
 using RawRabbit;
+using Newtonsoft.Json;
 
 namespace GakkoServices.APIGateway.Models.GraphQL
 {
@@ -18,7 +19,8 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 resolve: async context =>
                 {
                     var userId = (await helpers.AuthenticateFromContext(context)).UserId;
-                    return await helpers.GetProfileFromAccountId(userId);
+                    var thing = await helpers.GetProfileFromAccountId(userId);
+                    return thing;
                 }
             );
             FieldAsync<ProfileType>(
@@ -31,18 +33,17 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         }
                     );
                     var profileData = responseTask.data as ProfileData;
-                    return new Profile {
-                        Id = profileData.Id,
-                        Username = profileData.Username,
-                        TrainerCode = profileData.TrainerCode,
-                        Level = profileData.Level,
-                        TeamId = profileData.TeamId,
-                        FeaturedPokemon = {
-                            profileData.FeaturedPokemon1,
-                            profileData.FeaturedPokemon2,
-                            profileData.FeaturedPokemon3,
-                        },
-                    };
+                    Profile p = new Profile();
+                    p.Id = profileData.Id;
+                    p.Username = profileData.Username;
+                    p.TrainerCode = profileData.TrainerCode;
+                    p.Level = profileData.Level;
+                    p.TeamId = profileData.TeamId;
+                    p.FeaturedPokemon = new List<Guid>();
+                    p.FeaturedPokemon.Add(profileData.FeaturedPokemon1);
+                    p.FeaturedPokemon.Add(profileData.FeaturedPokemon2);
+                    p.FeaturedPokemon.Add(profileData.FeaturedPokemon3);
+                    return p;
                 }
             );
 

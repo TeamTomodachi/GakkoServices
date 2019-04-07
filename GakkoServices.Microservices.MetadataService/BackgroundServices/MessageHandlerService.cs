@@ -180,5 +180,30 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
                 };
             }
         }
+
+        private async Task<ResultMessage> GetAllPokemon(PokemenRequestMessage message, MessageContext context)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
+                var pokemon = await dbContext.PogoPokemon.ToListAsync();
+
+                var pokemonDatas = new List<PokemonData>();
+                foreach (var poke in pokemon) {
+                    pokemonDatas.Add(new PokemonData {
+                        Id = poke.Id,
+                        Name = poke.Name,
+                        PokedexNumber = poke.PokedexNumber,
+                        SpriteImageUrl = poke.SpriteImageUrl,
+                        PogoImageUrl = poke.PogoImageUrl,
+                    });
+                }
+
+                return new ResultMessage {
+                    status = ResultMessage.Status.Ok,
+                    data = pokemonDatas,
+                };
+            }
+        }
     }
 }

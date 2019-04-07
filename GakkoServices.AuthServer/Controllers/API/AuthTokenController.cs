@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace GakkoServices.AuthServer.Controllers
 {
@@ -49,7 +50,8 @@ namespace GakkoServices.AuthServer.Controllers
             if (!validationArgs.IsValid) {
                 validationArgs.Token = null;
             }
-            return new ObjectResult(validationArgs);
+
+            return new ObjectResult(JsonConvert.SerializeObject(validationArgs));
         }
     }
 }

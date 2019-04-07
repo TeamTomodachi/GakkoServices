@@ -108,6 +108,43 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
+            FieldAsync<BadgeType>(
+                "badge",
+                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
+                resolve: async context => {
+                    var responseTask = await queue.RequestAsync<BadgeRequestMessage, ResultMessage>(
+                        new BadgeRequestMessage {
+                            Id = Guid.Parse(context.GetArgument<string>("id")),
+                        }
+                    );
+                    var badgeData = responseTask.data as BadgeData;
+                    return new Badge {
+                        Id = badgeData.Id,
+                        Name = badgeData.Name,
+                        ImageUrl = badgeData.ImageUrl,
+                    };
+                }
+            );
+
+            FieldAsync<ListGraphType<TeamType>>(
+                "badges",
+                resolve: async context => {
+                    var responseTask = await queue.RequestAsync<BadgesRequestMessage, ResultMessage>(
+                        new BadgesRequestMessage()
+                    );
+                    var badgeDatas = responseTask.data as List<BadgeData>;
+                    var badges = new List<Badge>();
+                    foreach (var badgeData in badgeDatas) {
+                        badges.Add(new Badge {
+                            Id = badgeData.Id,
+                            Name = badgeData.Name,
+                            ImageUrl = badgeData.ImageUrl,
+                        });
+                    }
+                    return badges;
+                }
+            );
+
             FieldAsync<ListGraphType<TeamType>>(
                 "teams",
                 resolve: async context => {
@@ -125,6 +162,27 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         });
                     }
                     return teams;
+                }
+            );
+
+            FieldAsync<ListGraphType<PokemonType>>(
+                "pokemen",
+                resolve: async context => {
+                    var responseTask = await queue.RequestAsync<PokemenRequestMessage, ResultMessage>(
+                        new PokemenRequestMessage()
+                    );
+                    var pokemanDatas = responseTask.data as List<PokemonData>;
+                    var pokemans = new List<Pokemon>();
+                    foreach (var pokemonData in pokemanDatas) {
+                        pokemans.Add(new Pokemon {
+                            Id = pokemonData.Id,
+                            Name = pokemonData.Name,
+                            PokedexNumber = pokemonData.PokedexNumber,
+                            SpriteImageUrl = pokemonData.SpriteImageUrl,
+                            PogoImageUrl = pokemonData.PogoImageUrl,
+                        });
+                    }
+                    return pokemans;
                 }
             );
         }

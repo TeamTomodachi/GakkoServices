@@ -10,6 +10,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
             Field<StringGraphType>("username");
             Field<StringGraphType>("trainerCode");
             Field<IntGraphType>("gender");
+            Field<IntGraphType>("level");
             Field<StringGraphType>("teamId");
             Field<StringGraphType>("featuredPokemon1");
             Field<StringGraphType>("featuredPokemon2");

@@ -60,6 +60,47 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
             }
         }
 
+        private async Task<ResultMessage> GetBadge(BadgeRequestMessage message, MessageContext context)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
+                PogoBadge badge = await dbContext.PogoBadges.FindAsync(message.Id);
+
+                return new ResultMessage {
+                    status = ResultMessage.Status.Ok,
+                    data = new BadgeData {
+                        Id = badge.Id,
+                        Name = badge.Name,
+                        ImageUrl = badge.ImageUrl,
+                    },
+                };
+            }
+        }
+
+        private async Task<ResultMessage> GetAllBadges(BadgesRequestMessage message, MessageContext context)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
+                var badges = await dbContext.PogoBadges.ToListAsync();
+
+                var badgeDatas = new List<BadgeData>();
+                foreach (var badge in badges) {
+                    badgeDatas.Add(new BadgeData {
+                        Id = badge.Id,
+                        Name = badge.Name,
+                        ImageUrl = badge.ImageUrl,
+                    });
+                }
+
+                return new ResultMessage {
+                    status = ResultMessage.Status.Ok,
+                    data = badgeDatas,
+                };
+            }
+        }
+
         private async Task<ResultMessage> GetAllTeams(TeamsRequestMessage message, MessageContext context)
         {
             using (var scope = _scopeFactory.CreateScope())

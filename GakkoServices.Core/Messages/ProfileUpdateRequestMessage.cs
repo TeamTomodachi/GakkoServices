@@ -12,6 +12,9 @@ namespace GakkoServices.Core.Messages
         public string PogoUsername;
         public string PogoTrainerCode;
         public int? PogoLevel;
-        public Enum Gender;
+        public Guid? FeaturedPokemon1;
+        public Guid? FeaturedPokemon2;
+        public Guid? FeaturedPokemon3;
+        public int? Gender;
     }
 }

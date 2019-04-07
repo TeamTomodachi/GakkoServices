@@ -119,8 +119,23 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                     if (message.PogoTeamId.HasValue) {
                         profile.PogoTeamId = message.PogoTeamId.Value;
                     }
+                    if (!string.IsNullOrWhiteSpace(message.PogoTrainerCode)) {
+                        profile.PogoTrainerCode = message.PogoTrainerCode;
+                    }
                     if (!string.IsNullOrWhiteSpace(message.PogoUsername)) {
                         profile.PogoUsername = message.PogoUsername;
+                    }
+                    if (message.FeaturedPokemon1.HasValue) {
+                        profile.FeaturedPokemon1 = message.FeaturedPokemon1.Value;
+                    }
+                    if (message.FeaturedPokemon2.HasValue) {
+                        profile.FeaturedPokemon2 = message.FeaturedPokemon2.Value;
+                    }
+                    if (message.FeaturedPokemon3.HasValue) {
+                        profile.FeaturedPokemon3 = message.FeaturedPokemon3.Value;
+                    }
+                    if (message.Gender.HasValue) {
+                        profile.PlayerGender = (Gender) message.Gender.Value;
                     }
                     await dbContext.SaveChangesAsync();
                 }

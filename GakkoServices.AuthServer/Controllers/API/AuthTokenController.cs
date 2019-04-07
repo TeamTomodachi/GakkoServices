@@ -51,7 +51,13 @@ namespace GakkoServices.AuthServer.Controllers
                 validationArgs.Token = null;
             }
 
-            return new ObjectResult(JsonConvert.SerializeObject(validationArgs));
+            dynamic d = new {
+                IsValid = validationArgs.IsValid,
+                Token = validationArgs?.Token.Token,
+                LoginDateTimeUtc = validationArgs?.Token.LoginDateTimeUtc,
+                ExpiryDateTimeUtc = validationArgs?.Token.ExpiryDateTimeUtc,
+            };
+            return new ObjectResult(d);
         }
     }
 }

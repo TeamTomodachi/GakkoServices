@@ -126,6 +126,24 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
+
+            FieldAsync<PokemonTypeType>(
+                "pokemonType",
+                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
+                resolve: async context => {
+                    var responseTask = await queue.RequestAsync<PokemonTypeRequestMessage, ResultMessage>(
+                        new PokemonTypeRequestMessage {
+                            Id = Guid.Parse(context.GetArgument<string>("id")),
+                        }
+                    );
+                    var typeData = responseTask.data as PokemonTypeData;
+                    return new PokemonTypeInfo {
+                        Id = typeData.Id,
+                        Name = typeData.Name,
+                    };
+                }
+            );
+
             FieldAsync<ListGraphType<BadgeType>>(
                 "badges",
                 resolve: async context => {
@@ -183,6 +201,24 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         });
                     }
                     return pokemans;
+                }
+            );
+
+            FieldAsync<ListGraphType<PokemonTypeType>>(
+                "pokemonTypes",
+                resolve: async context => {
+                    var responseTask = await queue.RequestAsync<PokemonTypesRequestMessage, ResultMessage>(
+                        new PokemonTypesRequestMessage()
+                    );
+                    var typeDatas = responseTask.data as List<PokemonTypeData>;
+                    var types = new List<PokemonTypeInfo>();
+                    foreach (var typeData in typeDatas) {
+                        types.Add(new PokemonTypeInfo {
+                            Id = typeData.Id,
+                            Name = typeData.Name,
+                        });
+                    }
+                    return types;
                 }
             );
         }

@@ -126,7 +126,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
-            FieldAsync<ListGraphType<TeamType>>(
+            FieldAsync<ListGraphType<BadgeType>>(
                 "badges",
                 resolve: async context => {
                     var responseTask = await queue.RequestAsync<BadgesRequestMessage, ResultMessage>(

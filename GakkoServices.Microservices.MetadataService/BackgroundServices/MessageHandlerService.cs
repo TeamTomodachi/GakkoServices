@@ -83,20 +83,17 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
             using (var scope = _scopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
-                var badges = await dbContext.PogoBadges.ToListAsync();
-
-                var badgeDatas = new List<BadgeData>();
-                foreach (var badge in badges) {
-                    badgeDatas.Add(new BadgeData {
-                        Id = badge.Id,
-                        Name = badge.Name,
-                        ImageUrl = badge.ImageUrl,
-                    });
-                }
+                var badges = await dbContext.PogoBadges
+                    .Select(x => new BadgeData {
+                        Id = x.Id,
+                        Name = x.Name,
+                        ImageUrl = x.ImageUrl,
+                    })
+                    .ToListAsync();
 
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,
-                    data = badgeDatas,
+                    data = badges,
                 };
             }
         }
@@ -106,21 +103,18 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
             using (var scope = _scopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
-                var teams = await dbContext.PogoTeams.ToListAsync();
-
-                var teamDatas = new List<TeamData>();
-                foreach (var team in teams) {
-                    teamDatas.Add(new TeamData {
-                        Id = team.Id,
-                        Name = team.Name,
-                        Color = team.Color,
-                        ImageUrl = team.ImageUrl,
-                    });
-                }
+                var teams = await dbContext.PogoTeams
+                    .Select(x => new TeamData {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Color = x.Color,
+                        ImageUrl = x.ImageUrl,
+                    })
+                    .ToListAsync();
 
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,
-                    data = teamDatas,
+                    data = teams,
                 };
             }
         }
@@ -186,22 +180,19 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
             using (var scope = _scopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
-                var pokemon = await dbContext.PogoPokemon.ToListAsync();
-
-                var pokemonDatas = new List<PokemonData>();
-                foreach (var poke in pokemon) {
-                    pokemonDatas.Add(new PokemonData {
-                        Id = poke.Id,
-                        Name = poke.Name,
-                        PokedexNumber = poke.PokedexNumber,
-                        SpriteImageUrl = poke.SpriteImageUrl,
-                        PogoImageUrl = poke.PogoImageUrl,
-                    });
-                }
+                var pokemon = await dbContext.PogoPokemon
+                    .Select(x => new PokemonData {
+                        Id = x.Id,
+                        Name = x.Name,
+                        PokedexNumber = x.PokedexNumber,
+                        SpriteImageUrl = x.SpriteImageUrl,
+                        PogoImageUrl = x.PogoImageUrl,
+                    })
+                    .ToListAsync();
 
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,
-                    data = pokemonDatas,
+                    data = pokemon,
                 };
             }
         }

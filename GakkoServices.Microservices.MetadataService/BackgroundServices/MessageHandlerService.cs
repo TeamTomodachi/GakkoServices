@@ -38,6 +38,11 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
             _queue.RespondAsync<TeamRequestMessage, ResultMessage>(GetTeam);
             _queue.RespondAsync<TeamsRequestMessage, ResultMessage>(GetAllTeams);
             _queue.RespondAsync<PokemonRequestMessage, ResultMessage>(GetPokemon);
+            _queue.RespondAsync<PokemenRequestMessage, ResultMessage>(GetAllPokemon);
+            _queue.RespondAsync<BadgeRequestMessage, ResultMessage>(GetBadge);
+            _queue.RespondAsync<BadgesRequestMessage, ResultMessage>(GetAllBadges);
+            _queue.RespondAsync<PokemonTypeRequestMessage, ResultMessage>(GetPokemonType);
+            _queue.RespondAsync<PokemonTypesRequestMessage, ResultMessage>(GetAllPokemonTypes);
             return Task.CompletedTask;
         }
 
@@ -78,6 +83,23 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
             }
         }
 
+        private async Task<ResultMessage> GetPokemonType(PokemonTypeRequestMessage message, MessageContext context)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
+                PogoPokemonType type = await dbContext.PogoPokemonTypes.FindAsync(message.Id);
+
+                return new ResultMessage {
+                    status = ResultMessage.Status.Ok,
+                    data = new PokemonTypeData {
+                        Id = type.Id,
+                        Name = type.Name,
+                    },
+                };
+            }
+        }
+
         private async Task<ResultMessage> GetAllBadges(BadgesRequestMessage message, MessageContext context)
         {
             using (var scope = _scopeFactory.CreateScope())
@@ -94,6 +116,25 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,
                     data = badges,
+                };
+            }
+        }
+
+        private async Task<ResultMessage> GetAllPokemonTypes(PokemonTypesRequestMessage message, MessageContext context)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
+                var types = await dbContext.PogoBadges
+                    .Select(x => new PokemonTypeData {
+                        Id = x.Id,
+                        Name = x.Name,
+                    })
+                    .ToListAsync();
+
+                return new ResultMessage {
+                    status = ResultMessage.Status.Ok,
+                    data = types,
                 };
             }
         }

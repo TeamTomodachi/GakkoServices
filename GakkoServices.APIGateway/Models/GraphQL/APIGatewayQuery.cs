@@ -7,6 +7,7 @@ using GakkoServices.Core.Messages;
 using GakkoServices.Core.Models;
 using RawRabbit;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace GakkoServices.APIGateway.Models.GraphQL
 {
@@ -151,14 +152,14 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         new BadgesRequestMessage()
                     );
                     var badgeDatas = responseTask.data as List<BadgeData>;
-                    var badges = new List<Badge>();
-                    foreach (var badgeData in badgeDatas) {
-                        badges.Add(new Badge {
-                            Id = badgeData.Id,
-                            Name = badgeData.Name,
-                            ImageUrl = badgeData.ImageUrl,
-                        });
-                    }
+                    var badges = badgeDatas
+                        .Select(x => new Badge {
+                            Id = x.Id,
+                            Name = x.Name,
+                            ImageUrl = x.ImageUrl,
+                        })
+                        .ToList();
+                
                     return badges;
                 }
             );
@@ -170,15 +171,15 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         new TeamsRequestMessage()
                     );
                     var teamDatas = responseTask.data as List<TeamData>;
-                    var teams = new List<Team>();
-                    foreach (var teamData in teamDatas) {
-                        teams.Add(new Team {
-                            Id = teamData.Id,
-                            Name = teamData.Name,
-                            Color = teamData.Color,
-                            ImageUrl = teamData.ImageUrl,
-                        });
-                    }
+                    var teams = teamDatas
+                        .Select(x => new Team {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Color = x.Color,
+                            ImageUrl = x.ImageUrl,
+                        })
+                        .ToList();
+                        
                     return teams;
                 }
             );
@@ -190,16 +191,16 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         new PokemenRequestMessage()
                     );
                     var pokemanDatas = responseTask.data as List<PokemonData>;
-                    var pokemans = new List<Pokemon>();
-                    foreach (var pokemonData in pokemanDatas) {
-                        pokemans.Add(new Pokemon {
-                            Id = pokemonData.Id,
-                            Name = pokemonData.Name,
-                            PokedexNumber = pokemonData.PokedexNumber,
-                            SpriteImageUrl = pokemonData.SpriteImageUrl,
-                            PogoImageUrl = pokemonData.PogoImageUrl,
-                        });
-                    }
+                    var pokemans = pokemanDatas
+                        .Select(x => new Pokemon {
+                            Id = x.Id,
+                            Name = x.Name,
+                            PokedexNumber = x.PokedexNumber,
+                            SpriteImageUrl = x.SpriteImageUrl,
+                            PogoImageUrl = x.PogoImageUrl,
+                        })
+                        .ToList();
+                        
                     return pokemans;
                 }
             );
@@ -211,13 +212,13 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                         new PokemonTypesRequestMessage()
                     );
                     var typeDatas = responseTask.data as List<PokemonTypeData>;
-                    var types = new List<PokemonTypeInfo>();
-                    foreach (var typeData in typeDatas) {
-                        types.Add(new PokemonTypeInfo {
-                            Id = typeData.Id,
-                            Name = typeData.Name,
-                        });
-                    }
+                    var types = typeDatas
+                        .Select(x => new PokemonTypeInfo {
+                            Id = x.Id,
+                            Name = x.Name,
+                        })
+                        .ToList();
+                        
                     return types;
                 }
             );

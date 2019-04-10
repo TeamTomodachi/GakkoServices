@@ -39,6 +39,11 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                             Id = Guid.Parse(context.GetArgument<string>("id")),
                         };
                     }
+                    else if (context.HasArgument("useraccountid")) {
+                        message = new ProfileRequestMessage {
+                            UserAccountId = Guid.Parse(context.GetArgument<string>("useraccountid")),
+                        };
+                    }
                     else if (context.HasArgument("username")) {
                         message = new ProfileRequestMessage {
                             Username = context.GetArgument<string>("username"),

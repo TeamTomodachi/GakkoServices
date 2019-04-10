@@ -11,6 +11,7 @@ using GakkoServices.Microservices.ProfileService.Models;
 using GakkoServices.Core.Services;
 using GakkoServices.Core.Models;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace GakkoServices.Microservices.ProfileService.BackgroundServices
 {
@@ -35,23 +36,29 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
 
         private async Task<ResultMessage> GetProfile(ProfileRequestMessage message, MessageContext context)
         {
+            Console.WriteLine(JsonConvert.SerializeObject(message));
             using (var scope = _scopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ProfileServiceDbContext>();
 
-                PogoProfile profile;
+                PogoProfile profile = null;
                 if (message.Id.HasValue) {
-                    profile = await dbContext.PogoProfiles.FindAsync(message.Id);
+                    // profile = await dbContext.PogoProfiles.FindAsync(message.Id);
+                    profile = await dbContext.PogoProfiles.Where(x => x.Id == message.Id).FirstOrDefaultAsync()
                 }
                 else if (message.UserAccountId.HasValue) {
-                    profile = dbContext.PogoProfiles.Where(x => x.UserAccountId == message.UserAccountId).FirstOrDefault();
+                    profile = await dbContext.PogoProfiles.Where(x => x.UserAccountId == message.UserAccountId).FirstOrDefaultAsync();
                 }
                 else if (!string.IsNullOrWhiteSpace(message.Username))
                 {
-                    profile = dbContext.PogoProfiles.Where(x => x.PogoUsername == message.Username).FirstOrDefault();
+                    profile = await dbContext.PogoProfiles.Where(x => x.PogoUsername.ToLower() == message.Username.ToLower()).FirstOrDefaultAsync();
                 }
                 else {
                     throw new ArgumentNullException("GetProfile called with no Id, UserAccountId or Username");
+                }
+
+                if (profile == null) {
+                    throw new NullReferenceException("Profile could not be found");
                 }
 
                 return new ResultMessage {

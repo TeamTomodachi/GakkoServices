@@ -26,13 +26,28 @@ namespace GakkoServices.APIGateway.Models.GraphQL
             );
             FieldAsync<ProfileType>(
                 "profile",
-                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
+                arguments: new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "id" },
+                    new QueryArgument<StringGraphType> { Name = "username" }
+                ),
                 resolve: async context => {
-                    var responseTask = await queue.RequestAsync<ProfileRequestMessage, ResultMessage>(
-                        new ProfileRequestMessage {
+                    ProfileRequestMessage message;
+                    if (context.HasArgument("id"))
+                    {
+                        message = new ProfileRequestMessage {
                             Id = Guid.Parse(context.GetArgument<string>("id")),
-                        }
-                    );
+                        };
+                    }
+                    else if (context.HasArgument("username")) {
+                        message = new ProfileRequestMessage {
+                            Username = context.GetArgument<string>("username"),
+                        };
+                    }
+                    else {
+                        throw new ArgumentNullException();
+                    }
+                    
+                    var responseTask = await queue.RequestAsync<ProfileRequestMessage, ResultMessage>(message);
                     var profileData = responseTask.data as ProfileData;
                     Profile p = new Profile();
                     p.Id = profileData.Id;

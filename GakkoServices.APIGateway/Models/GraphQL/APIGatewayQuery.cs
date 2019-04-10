@@ -28,6 +28,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 "profile",
                 arguments: new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "id" },
+                    new QueryArgument<StringGraphType> { Name = "useraccountid" },
                     new QueryArgument<StringGraphType> { Name = "username" }
                 ),
                 resolve: async context => {

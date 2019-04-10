@@ -44,7 +44,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 PogoProfile profile = null;
                 if (message.Id.HasValue) {
                     // profile = await dbContext.PogoProfiles.FindAsync(message.Id);
-                    profile = await dbContext.PogoProfiles.Where(x => x.Id == message.Id).FirstOrDefaultAsync()
+                    profile = await dbContext.PogoProfiles.Where(x => x.Id == message.Id).FirstOrDefaultAsync();
                 }
                 else if (message.UserAccountId.HasValue) {
                     profile = await dbContext.PogoProfiles.Where(x => x.UserAccountId == message.UserAccountId).FirstOrDefaultAsync();

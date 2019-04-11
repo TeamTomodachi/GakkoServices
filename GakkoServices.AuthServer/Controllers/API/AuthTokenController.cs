@@ -41,7 +41,7 @@ namespace GakkoServices.AuthServer.Controllers
         /// <summary>
         /// Validates a given AuthToken is active
         /// </summary>
-        /// <param name="item">An Authentication Token</param>
+        /// <param name="token">An Authentication Token</param>
         /// <returns>Whether the AuthToken is valid</returns>
         // [EnableCors(Startup.CORS_POLICY)]
         [HttpPost]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using GakkoServices.AuthServer.Business.Models;
@@ -10,6 +11,7 @@ using GakkoServices.AuthServer.Models.Authentication;
 using GakkoServices.AuthServer.Models.UserAccount;
 using GakkoServices.Core.Messages;
 using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
@@ -112,11 +114,27 @@ namespace GakkoServices.AuthServer.Business.Services
             // Return the Successful/Failed Result
             return new RegisterNewUserArgs(result, newUser, token);
         }
+        
+        public async Task LogoutUserByAuthToken(string authToken, ClaimsPrincipal claimsPrincipalUser) {
+            var token = await RetrieveAuthToken(authToken);
+            if (token == null) return;
+
+            var user = await _identityDbContext.Users.FindAsync(token.UserId);
+            if (claimsPrincipalUser?.Identity.IsAuthenticated == true)
+            {
+                // delete local authentication cookie
+                await _signInManager.SignOutAsync();
+
+                // raise the logout event
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(claimsPrincipalUser.GetSubjectId(), claimsPrincipalUser.GetDisplayName()));
+            }
+
+            var tokenEntry = _identityDbContext.Remove(token);
+            await _identityDbContext.SaveChangesAsync();
+        }
 
         public async Task<ValidateAuthTokenArgs> ValidateAuthToken(string authToken) {
-            var token = await _identityDbContext.AuthTokens
-                .Where(x => x.Token == authToken)
-                .FirstOrDefaultAsync();
+            var token = await RetrieveAuthToken(authToken);
             var currentUtc = DateTime.UtcNow;
 
             if (token == null || (token.ExpiryDateTimeUtc != null && token.ExpiryDateTimeUtc < currentUtc)) {
@@ -124,6 +142,13 @@ namespace GakkoServices.AuthServer.Business.Services
             } 
 
             return new ValidateAuthTokenArgs(token, true);
+        }
+
+        public async Task<AuthToken> RetrieveAuthToken(string authToken) {
+            var token = await _identityDbContext.AuthTokens
+                .Where(x => x.Token == authToken)
+                .FirstOrDefaultAsync();
+            return token;
         }
 
         public async Task<AuthToken> CreateAuthToken(ApplicationUser user, bool addToDb)

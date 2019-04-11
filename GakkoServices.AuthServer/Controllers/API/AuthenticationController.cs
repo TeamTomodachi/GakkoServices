@@ -63,5 +63,17 @@ namespace GakkoServices.AuthServer.Controllers
 
             return new ObjectResult(AccountOptions.InvalidCredentialsErrorMessage);
         }
+
+        /// <summary>
+        /// Logs a user out of the system
+        /// </summary>
+        /// <param name="token">An Authentication Token</param>
+        /// <returns>A message detailing whether the action was successful</returns>
+        // [EnableCors(Startup.CORS_POLICY)]
+        [HttpPut]
+        public async Task<IActionResult> LogoutToken([FromHeader] string token) {
+            await _accountService.LogoutUserByAuthToken(token, User);
+            return new ObjectResult("You have logged out of the system");
+        }
     }
 }

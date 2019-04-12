@@ -89,6 +89,11 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 getByPokedex(2),
                 getByPokedex(3),
             })).Select(result => result.data as PokemonData).ToArray();
+            var team = await _queue.RequestAsync<TeamRequestMessage, ResultMessage>(
+                new TeamRequestMessage {
+                    Name = "Mystic",
+                }
+            );
 
             var profile = new PogoProfile
             {
@@ -97,6 +102,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 PogoUsername = "anonymous",
                 PogoLevel = 1,
                 PogoTrainerCode = "0000 0000 0000",
+                PogoTeamId = (team.data as TeamData).Id,
                 PlayerGender = Gender.None,
                 FeaturedPokemon1 = pokemonResults[0].Id,
                 FeaturedPokemon2 = pokemonResults[1].Id,

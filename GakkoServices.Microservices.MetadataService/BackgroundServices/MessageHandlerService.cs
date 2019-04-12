@@ -51,7 +51,21 @@ namespace GakkoServices.Microservices.MetadataService.BackgroundServices
             using (var scope = _scopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<MetadataServiceDbContext>();
-                PogoTeam team = await dbContext.PogoTeams.FindAsync(message.Id);
+                PogoTeam team;
+                if (message.Id.HasValue)
+                {
+                    _logger.LogDebug("Got pokemon ID in request message {Guid}", message.Id);
+                    team = await dbContext.PogoTeams.FindAsync(message.Id);
+                }
+                else if (!string.IsNullOrWhiteSpace(message.Name))
+                {
+                    team = await dbContext.PogoTeams
+                        .Where(p => p.Name.ToLower() == message.Name.ToLower())
+                        .FirstOrDefaultAsync();
+                }
+                else {
+                    throw new ArgumentNullException();
+                }
 
                 return new ResultMessage {
                     status = ResultMessage.Status.Ok,

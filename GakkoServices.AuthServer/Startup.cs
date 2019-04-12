@@ -105,8 +105,8 @@ namespace GakkoServices.AuthServer
             {
                 options.Discovery.ShowTokenEndpointAuthenticationMethods = true;
                 options.Discovery.CustomEntries.Add("UserAccount", "~/api/UserAccount");
-                options.Discovery.CustomEntries.Add("UserAccount", "~/api/AuthToken");
-                options.Discovery.CustomEntries.Add("UserAccount", "~/api/Authentication");
+                options.Discovery.CustomEntries.Add("AuthToken", "~/api/AuthToken");
+                options.Discovery.CustomEntries.Add("Authentication", "~/api/Authentication");
             }).AddAspNetIdentity<ApplicationUser>()
             .AddConfigurationStore(options => // this adds the config data from DB (clients, resources)
             {

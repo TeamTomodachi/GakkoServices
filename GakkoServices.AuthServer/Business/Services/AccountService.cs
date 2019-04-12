@@ -107,7 +107,10 @@ namespace GakkoServices.AuthServer.Business.Services
             {
                 // Log the User Creation
                 _logger.LogInformation(3, $"User({newUser.Id}): ${newUser.UserName}, created a new account with password.");
-                await _bus.PublishAsync<UserCreateMessage>(new UserCreateMessage { Id = newUser.Id });
+                await _bus.PublishAsync<UserCreateMessage>(new UserCreateMessage { 
+                    Id = newUser.Id ,
+                    Username = newUser.UserName
+                });
 
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                 // Send an email with this link

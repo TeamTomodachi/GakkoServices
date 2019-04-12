@@ -99,7 +99,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
             {
                 Id = Guid.NewGuid(),
                 UserAccountId = message.Id,
-                PogoUsername = "anonymous",
+                PogoUsername = message.Username, //"anonymous",
                 PogoLevel = 1,
                 PogoTrainerCode = "0000 0000 0000",
                 PogoTeamId = (team.data as TeamData).Id,

@@ -29,6 +29,7 @@ namespace GakkoServices.AuthServer.Business.Services
 {
     public class AccountService
     {
+        public enum UsernameLoginMode { Username, Email }
         public UserManager<ApplicationUser> _userManager { get; protected set; }
         public SignInManager<ApplicationUser> _signInManager { get; protected set; }
         public IIdentityServerInteractionService _interaction { get; protected set; }
@@ -67,6 +68,18 @@ namespace GakkoServices.AuthServer.Business.Services
 
         public async Task<UserLoginArgs> LoginUser(UserLogin item)
         {
+            UsernameLoginMode usernameLoginMode = UsernameLoginMode.Username;
+            if (item.Username.Contains('@')) usernameLoginMode = UsernameLoginMode.Email;
+
+            // If the login mode is email, then grab the username for signin purposes
+            // string originalUsername = item.Username;
+            // if (usernameLoginMode == UsernameLoginMode.Email) {
+            //     item.Username = await _identityDbContext.Users
+            //         .Where(x => x.NormalizedEmail.ToUpper() == item.Username.ToUpper())
+            //         .Select(x => x.UserName)
+            //         .FirstOrDefaultAsync();
+            // }
+
             ApplicationUser loggedInUser = null;
             AuthToken token = null;
             var result = await _signInManager.PasswordSignInAsync(item.Username, item.Password, item.RememberLogin, lockoutOnFailure: true);

@@ -73,6 +73,11 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                         FeaturedPokemon1 = profile.FeaturedPokemon1,
                         FeaturedPokemon2 = profile.FeaturedPokemon2,
                         FeaturedPokemon3 = profile.FeaturedPokemon3,
+                        FeaturedBadge1 = profile.FeaturedBadge1,
+                        FeaturedBadge2 = profile.FeaturedBadge2,
+                        FeaturedBadge3 = profile.FeaturedBadge3,
+                        FeaturedBadge4 = profile.FeaturedBadge4,
+                        FeaturedBadge5 = profile.FeaturedBadge5,
                     },
                 };
             }
@@ -80,6 +85,7 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
 
         private async Task CreateProfile(UserCreateMessage message, MessageContext context)
         {
+            // Get Pokemon
             Func<int, Task<ResultMessage>> getByPokedex = (int num) => 
                 _queue.RequestAsync<PokemonRequestMessage, ResultMessage>(
                     new PokemonRequestMessage { PokedexNumber = num });
@@ -107,6 +113,11 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                 FeaturedPokemon1 = pokemonResults[0].Id,
                 FeaturedPokemon2 = pokemonResults[1].Id,
                 FeaturedPokemon3 = pokemonResults[2].Id,
+                FeaturedBadge1 = Guid.Empty,
+                FeaturedBadge2 = Guid.Empty,
+                FeaturedBadge3 = Guid.Empty,
+                FeaturedBadge4 = Guid.Empty,
+                FeaturedBadge5 = Guid.Empty,
             };
 
             using (var scope = _scopeFactory.CreateScope())
@@ -146,6 +157,21 @@ namespace GakkoServices.Microservices.ProfileService.BackgroundServices
                     }
                     if (message.FeaturedPokemon3.HasValue) {
                         profile.FeaturedPokemon3 = message.FeaturedPokemon3.Value;
+                    }
+                    if (message.FeaturedBadge1.HasValue) {
+                        profile.FeaturedBadge1 = message.FeaturedBadge1.Value;
+                    }
+                    if (message.FeaturedBadge2.HasValue) {
+                        profile.FeaturedBadge2 = message.FeaturedBadge2.Value;
+                    }
+                    if (message.FeaturedBadge3.HasValue) {
+                        profile.FeaturedBadge3 = message.FeaturedBadge3.Value;
+                    }
+                    if (message.FeaturedBadge4.HasValue) {
+                        profile.FeaturedBadge4 = message.FeaturedBadge4.Value;
+                    }
+                    if (message.FeaturedBadge5.HasValue) {
+                        profile.FeaturedBadge5 = message.FeaturedBadge5.Value;
                     }
                     if (message.Gender.HasValue) {
                         profile.PlayerGender = (Gender) message.Gender.Value;

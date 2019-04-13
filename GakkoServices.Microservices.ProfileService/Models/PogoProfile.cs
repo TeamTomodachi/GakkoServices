@@ -21,5 +21,11 @@ namespace GakkoServices.Microservices.ProfileService.Models
         public Guid FeaturedPokemon1 { get; set; }
         public Guid FeaturedPokemon2 { get; set; }
         public Guid FeaturedPokemon3 { get; set; }
+
+        public Guid FeaturedBadge1 { get; set; }
+        public Guid FeaturedBadge2 { get; set; }
+        public Guid FeaturedBadge3 { get; set; }
+        public Guid FeaturedBadge4 { get; set; }
+        public Guid FeaturedBadge5 { get; set; }
     }
 }

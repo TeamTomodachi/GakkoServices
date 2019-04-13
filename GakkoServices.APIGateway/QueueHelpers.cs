@@ -42,6 +42,12 @@ namespace GakkoServices.APIGateway
             p.FeaturedPokemon.Add(profileData.FeaturedPokemon1);
             p.FeaturedPokemon.Add(profileData.FeaturedPokemon2);
             p.FeaturedPokemon.Add(profileData.FeaturedPokemon3);
+            p.FeaturedBadges = new List<Guid>();
+            p.FeaturedBadges.Add(profileData.FeaturedBadge1);
+            p.FeaturedBadges.Add(profileData.FeaturedBadge2);
+            p.FeaturedBadges.Add(profileData.FeaturedBadge3);
+            p.FeaturedBadges.Add(profileData.FeaturedBadge4);
+            p.FeaturedBadges.Add(profileData.FeaturedBadge5);
             return p;
         }
 

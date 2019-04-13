@@ -12,5 +12,6 @@ namespace GakkoServices.APIGateway.Models
         public int Level { get; set; }
         public Guid TeamId { get; set; }
         public IList<Guid> FeaturedPokemon { get; set; }
+        public IList<Guid> FeaturedBadges { get; set; }
     }
 }

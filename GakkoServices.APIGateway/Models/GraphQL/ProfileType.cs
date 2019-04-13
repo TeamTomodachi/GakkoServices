@@ -68,6 +68,49 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                     return pokemen;
                 }
             );
+            FieldAsync<BadgeType>(
+                "featuredBadge",
+                arguments: new QueryArguments(new QueryArgument<IntGraphType> { Name = "n" }),
+                resolve: async context => {
+                    var responseTask = await queue.RequestAsync<BadgeRequestMessage, ResultMessage>(
+                        new BadgeRequestMessage {
+                            Id = context.Source.FeaturedBadges[context.GetArgument<int>("n")],
+                        }
+                    );
+                    var badgeData = responseTask.data as BadgeData;
+                    return new Badge {
+                        Id = badgeData.Id,
+                        Name = badgeData.Name,
+                        ImageUrl = badgeData.ImageUrl,
+                    };
+                }
+            );
+            FieldAsync<ListGraphType<BadgeType>>(
+                "featuredBadges",
+                resolve: async context => {
+                    var responseTasks = new List<Task<ResultMessage>>();
+                    foreach (Guid badge in context.Source.FeaturedBadges) {
+                        responseTasks.Add(
+                            queue.RequestAsync<BadgeRequestMessage, ResultMessage>(
+                                new BadgeRequestMessage {
+                                    Id = context.Source.FeaturedBadges[context.GetArgument<int>("n")],
+                                }
+                            )
+                        );
+                    }
+                    var badges = new List<Badge>();
+                    foreach (var result in await Task.WhenAll(responseTasks)) {
+                        var badgeData = result.data as BadgeData;
+                        badges.Add(
+                            new Badge {
+                                Id = badgeData.Id,
+                                Name = badgeData.Name,
+                                ImageUrl = badgeData.ImageUrl,
+                        });
+                    }
+                    return badges;
+                }
+            );
             Field<StringGraphType>("teamId", resolve: context => context.Source.TeamId.ToString());
             FieldAsync<TeamType>(
                 "team",

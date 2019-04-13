@@ -10,6 +10,7 @@ namespace GakkoServices.Core.Models
         public int Gender { get; set; }
         public Guid TeamId { get; set; }
         public int Level { get; set; }
+
         public Guid FeaturedPokemon1 { get; set; }
         public Guid FeaturedPokemon2 { get; set; }
         public Guid FeaturedPokemon3 { get; set; }

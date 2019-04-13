@@ -61,6 +61,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                     p.TrainerCode = profileData.TrainerCode;
                     p.Level = profileData.Level;
                     p.TeamId = profileData.TeamId;
+                    p.Gender = profileData.Gender;
                     p.FeaturedPokemon = new List<Guid>();
                     p.FeaturedPokemon.Add(profileData.FeaturedPokemon1);
                     p.FeaturedPokemon.Add(profileData.FeaturedPokemon2);

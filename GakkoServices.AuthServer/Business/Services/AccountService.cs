@@ -72,13 +72,13 @@ namespace GakkoServices.AuthServer.Business.Services
             if (item.Username.Contains('@')) usernameLoginMode = UsernameLoginMode.Email;
 
             // If the login mode is email, then grab the username for signin purposes
-            // string originalUsername = item.Username;
-            // if (usernameLoginMode == UsernameLoginMode.Email) {
-            //     item.Username = await _identityDbContext.Users
-            //         .Where(x => x.NormalizedEmail.ToUpper() == item.Username.ToUpper())
-            //         .Select(x => x.UserName)
-            //         .FirstOrDefaultAsync();
-            // }
+            string originalUsername = item.Username;
+            if (usernameLoginMode == UsernameLoginMode.Email) {
+                // item.Username = await _identityDbContext.Users
+                //     .Where(x => x.NormalizedEmail.ToUpper() == item.Username.ToUpper())
+                //     .Select(x => x.UserName)
+                //     .FirstOrDefaultAsync();
+            }
 
             ApplicationUser loggedInUser = null;
             AuthToken token = null;

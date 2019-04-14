@@ -22,3 +22,5 @@ $migrationScriptPaths = @(
 foreach ($path in $migrationScriptPaths) {
     & $path;
 }
+
+Set-Location $scriptPath;

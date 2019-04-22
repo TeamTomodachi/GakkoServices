@@ -43,3 +43,6 @@ public enum SupportedDatabaseServerEngines
 
 ## Docker
 
+The AuthServer is exposed to the internet at `/auth`. It exists next to the
+APIGateway. The client accesses it separately from the APIGateway when logging
+in, verifying a token, or signing up.

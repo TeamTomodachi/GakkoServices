@@ -38,7 +38,8 @@ public enum SupportedDatabaseServerEngines
 1. Rename the .csproj to match FolderName format
 1. Change Namespace in Project Properties to match Folder Name
 1. Ctrl+f and change all existing namespaces in project to match new Namespace Structure
-1. Rename the DbContext to match Service Name 
+1. Rename the DbContext to match Service Name
 1. Go into the `GenerateMigrations.ps1` script and update the `$applicationDbPath` Context with the new Namespace and ContextName
 1. Go into `GenerateAllMigrations.ps1` script and add new Migration to `$migrationScriptPaths` 
 1. Add to Solution under "Microservices" Solution Folder
+1. Add an entry to the root `docker-compose.yml` following the format used by the other services.

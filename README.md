@@ -1,5 +1,23 @@
 # GakkoServices
 
+## Routing
+The Base URL of the API Gateway can be found at `/auth`
+
+The API Gateway has a single graphical interpreter endpoints
+
+* `/auth/swagger`
+
+And a couple API Controllers
+
+* `/auth/api/Authentication`
+* `/auth/api/AuthToken`
+* `/auth/api/UserAccount`
+
+The Auth Server also has an IdentityServer4 OAuth Endpoint setup here
+
+* `/auth/account`
+* `/auth/.well-known/openid-configuration`
+
 ## Configuration
 
 ### Generating the Migrations
@@ -40,3 +58,7 @@ To startup the Docker Containers using the previous built containers
 ## Creating a Microservice
 
 To create a Microservice, follow the `README.md` located wthin `GakkoServices.Microservices.ExampleTemplateService`
+
+## Updating the GraphQL Schema
+
+To create a Microservice, follow the `README.md` located wthin `GakkoServices.APIGateway`

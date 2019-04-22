@@ -28,6 +28,7 @@ namespace GakkoServices.APIGateway.Controllers.API
 
         [EnableCors(Startup.CORS_POLICY)]
         [HttpGet]
+        /// Query the GraphQL API over GET
         public async Task<IActionResult> Get([FromQuery] string query, [FromHeader] string token)
         {
             if (string.IsNullOrWhiteSpace(query)) { throw new ArgumentNullException(nameof(query)); }
@@ -38,12 +39,14 @@ namespace GakkoServices.APIGateway.Controllers.API
 
         // [EnableCors(Startup.CORS_POLICY)]
         [HttpPost]
+        /// Query the GraphQL API over POST
         public async Task<IActionResult> Post([FromBody] GraphQLQuery query, [FromHeader] string token)
         {
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             return await PreformQuery(query, token);
         }
 
+        /// Perform the query against the schema
         private async Task<IActionResult> PreformQuery(GraphQLQuery query, string token)
         {
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
@@ -54,6 +57,7 @@ namespace GakkoServices.APIGateway.Controllers.API
                 Schema = m_schema,
                 Query = query.Query,
                 Inputs = inputs,
+                // uncomment the next line to show exceptions for debugging
                 // ExposeExceptions = true,
             };
 

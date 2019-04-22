@@ -85,10 +85,11 @@ namespace GakkoServices.APIGateway
             });
 
             _logger.LogInformation("Waiting for rabbitmq...");
-            // Block until the rabbitmq panel is online
+            // Block until the rabbitmq panel is online (which should mean the queue is ready)
             NetworkingHelpers.WaitForOk(new Uri("http://rabbitmq:15672")).Wait();
             _logger.LogInformation("rabbitmq is ready");
 
+            // Add the QueueHelpers class to the DI as a singleton
             services.AddSingleton<QueueHelpers>();
 
             // Additional Configuration
@@ -116,6 +117,10 @@ namespace GakkoServices.APIGateway
             {
                 app.UseHsts();
             }
+
+            // HTTPS has been removed, since that should be handled by traefik.
+            // Trying to use HTTPS within the Docker networks is complicated and
+            // probably not necessary.
 
             // Enable custom Middleware to force Cross Site Access
             app.UseSecurityHeadersMiddleware(new SecurityHeadersBuilder()

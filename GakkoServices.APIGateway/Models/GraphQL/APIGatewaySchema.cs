@@ -11,6 +11,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
     {
         public APIGatewaySchema(IDependencyResolver resolver) : base(resolver)
         {
+            // add the query and mutation definitions to the schema
             Query = resolver.Resolve<APIGatewayQuery>();
             Mutation = resolver.Resolve<APIGatewayMutation>();
         }

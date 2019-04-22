@@ -1,44 +1,75 @@
 version: '3'
 
 services:
+
+  # Traefik is the reverse proxy/load balancer used to host all of the services
   traefik:
     image: traefik:alpine
+    # FIXME: If the monitoring dashboard is not used, remove the `--api` flag
+    # The logging level can be adjusted as needed. To see the logs, use
+    # `docker-compose logs traefik` From the GakkoServices directory
     command: --api --docker --loglevel=INFO
     ports:
       - 80:80
       - 443:443
+      # FIXME: The monitoring dashboard should not be exposed in production, or
+      # should be protected with some sort of authentication. Remove the next
+      # line to prevent it from being accessed.
       - 8080:8080 # for monitoring dashboard
     networks:
+      # The traefik network is used to expose services to the internet. Anything
+      # on this network with a proper traefik configuration will be accessible.
       - traefik
     volumes:
+      # This volume allows traefik to access the Docker socket from within the
+      # docker container. This is how it knows when an application comes online
+      # and how it get the configuration data.
       - /var/run/docker.sock:/var/run/docker.sock
 
-
+  # RabbitMQ is the message queue used for inter-service communication
   rabbitmq:
     image: rabbitmq:3-management-alpine
+    # The hostname is specified so the services can easily access it.
     hostname: rabbitmq
     networks:
+      # The `internal` network is used to connect with RabbitMQ
       - internal
     volumes:
+      # This volume is to persist the RabbitMQ data
       - ./.docker_data/rabbitmq:/var/lib/rabbitmq/mnesia/rabbit@rabbitmq
     ports:
+      # FIXME: This next line should be removed in production. It mounts the
+      # RabbitMQ dashboard directly to the host port 15672
       - 15672:15672 # management panel
 
-
+  # This container is for the front end. Having the front end within the backend
+  # repository means that we can host everything with one docker-compose file
   client:
     image: teamtomodachi/gakkofront
+    # The image used for this is built directly from the git repository in the
+    # GakkoFront directory, using the Dockerfile there
     build:
       context: ./GakkoFront
     networks:
+      # The client is on the traefik network so it is exposed to the internet
       - traefik
     labels:
+      # This label tells traefik which network to use, which is automatically
+      # prefixed with COMPOSE_PROJECT_NAME by docker-compose
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
+      # This label defines the path on which the frontend should be served
       traefik.frontend.rule: PathPrefix:/
+      # This label tell traefik which port to send requests to on the container
       traefik.port: 80
 
-
+  # The APIGateway container is what dispatches API requests to the different
+  # microservices
   APIGateway:
     image: gakkoservices/apigateway
+    # This image is built using the `Dockerfile-aspnetcore` file in the root of
+    # the repository. The args listed below are used in the dockerfile to build
+    # the correct directory, since the context is at the root of the repository.
+    # More details in the dockerfile
     build:
       context: .
       dockerfile: Dockerfile-aspnetcore
@@ -46,132 +77,191 @@ services:
         - name=GakkoServices.APIGateway
         - BUILD_ENVIRONMENT=Release
     networks:
+      # This container is on the internal and traefik networks, so it has access
+      # to the message queue and is on the internet
       - internal
       - traefik
     labels:
+      # The docker network that traefik should use to connect
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
+      # The path prefix that should have requests sent to this container
       traefik.frontend.rule: PathPrefix:/api-gateway
+      # The port to make requests to
       traefik.port: 80
+      # Some custom headers to add to responses (separated by ||)
       traefik.frontend.headers.customResponseHeaders: Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:PUT,GET,POST,DELETE,OPTIONS||Access-Control-Allow-Headers:origin,x-requested-with,content-type
 
-
+  # The AuthServer manages user authentication and registration
   AuthServer:
     image: gakkoservices/authserver
+    # See dockerfile and notes above about build process
     build:
       context: .
       dockerfile: Dockerfile-aspnetcore
       args:
         - name=GakkoServices.AuthServer
+    # These are environment variables defined in the container
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     networks:
+      # This container has access to the message queue, is on the internet, and
+      # has a database that is on the authserver_db_network
       - internal
       - traefik
       - authserver_db_network
+    # Only start this container when the message queue and the database have
+    # started
     depends_on:
       - AuthServerDB
       - rabbitmq
     labels:
+      # The network traefik should connect to this container on
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
+      # The prefix that requests should have to be routed here
       traefik.frontend.rule: PathPrefix:/auth
+      # The port traefik should connect to this container on
       traefik.port: 80
+      # Some custom response headers (separated by ||)
       traefik.frontend.headers.customResponseHeaders: Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:PUT,GET,POST,DELETE,OPTIONS||Access-Control-Allow-Headers:origin,x-requested-with,content-type
 
-
+  # This is the database used by the AuthServer
   AuthServerDB:
+    # Latest version of postgres
     image: postgres:alpine
     networks:
+      # This database is only connected to the authserver_db_network, which
+      # that only the AuthServer (which is also on the network) can access it
       - authserver_db_network
     volumes:
+      # This volume is for persisting the database. See docker volumes for more
+      # information
       - authserverdb:/var/lib/postgresql/data
     labels:
+      # This label is unneccesary, but is added just in case
       traefik.enable: false
 
-
+  # The profile service manages user profiles
   ProfileService:
     image: gakkoservices/profileservice
+    # See dockerfile and notes above about build process
     build:
       context: .
       dockerfile: Dockerfile-aspnetcore
       args:
         - name=GakkoServices.Microservices.ProfileService
+    # environment variables
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     networks:
+      # This service is only connected to the message queue and its database
       - internal
       - profileservice_db_network
+    # only start this container when the database and message queue have started
     depends_on:
       - ProfileServiceDB
       - rabbitmq
     labels:
+      # disable traefik just in case
       traefik.enable: false
 
-
+  # The database for the profile service
   ProfileServiceDB:
+    # Latest version of postgres
     image: postgres:alpine
     networks:
+      # only connect to the network used by the ProfileService
       - profileservice_db_network
     volumes:
+      # Persist the data to this docker volume
       - profileservicedb:/var/lib/postgresql/data
     labels:
+      # disable traefik just in case
       traefik.enable: false
 
-
+  # This service manages static data used in the application
   MetadataService:
     image: gakkoservices/metadataservice
+    # See dockerfile and notes above about build process
     build:
       context: .
       dockerfile: Dockerfile-aspnetcore
       args:
         - name=GakkoServices.Microservices.MetadataService
+    # environment variables
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+    # Only connected to the message queue and database
     networks:
       - internal
       - metadataservice_db_network
+    # Only start this container when the database and message queue have started
     depends_on:
       - MetadataServiceDB
       - rabbitmq
     labels:
+      # disable traefik just in case
       traefik.enable: false
 
-
+  # The database for the metadata service
   MetadataServiceDB:
+    # Latest version of postgres
     image: postgres:alpine
     networks:
+      # Only accessible on the network used by the metadata service
       - metadataservice_db_network
     volumes:
+      # Persist the data to this volume
       - metadataservicedb:/var/lib/postgresql/data
     labels:
+      # disable traefik just in case
       traefik.enable: false
 
-
+  # A database browser for use in development
+  # FIXME: This should be disabled in production, as it is exposed directly with
+  # no authentication other than the default postgres username and password
   adminer:
     image: adminer
+    # Connected to all database networks
     networks:
       - authserver_db_network
       - profileservice_db_network
       - metadataservice_db_network
     ports:
+      # FIXME: This is binding the container directly to the host machine's port
+      # 8081, which is a very bad idea
       - 8081:8080
     labels:
+      # disable traefik just in case
       traefik.enable: false
 
+  # A basic static file server. Any files in the `/static` directory of the
+  # repository will be accessible via `/static/<filename>` over the internet
   static:
+    # This image uses nginx to serve the static files in that directory
     image: halverneus/static-file-server
+    # Instruct nginx to serve the /static directory on port 80
     environment:
       - FOLDER=/static
       - PORT=80
     networks:
+      # Connect to the traefik network to be accesible over the internet
       - traefik
     volumes:
+      # Mount the folder ./static to the directory /static in the container
       - ./static:/static
     labels:
+      # Enable traefik
       traefik.enable: true
+      # Tell traefik which network to connect on
       traefik.docker.network: ${COMPOSE_PROJECT_NAME}_traefik
+      # Host the container at /static
       traefik.frontend.rule: PathPrefixStrip:/static
+      # connect on port 80
       traefik.port: 80
 
+# These are the networks used in this docker-compose file. They must be defined
+# here, since docker-compose with create and delete them when the whole thing is
+# started and stopped.
 networks:
   traefik:
     external: false
@@ -184,6 +274,9 @@ networks:
   metadataservice_db_network:
     external: false
 
+# These are the named volumes used in this docker-compose file. They are saved
+# wherever Docker chooses, and more details about them can be found with the
+# command `docker volume inspect <volume name>`
 volumes:
   authserverdb:
   profileservicedb:

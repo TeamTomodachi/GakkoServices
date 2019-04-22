@@ -1,11 +1,15 @@
-# Required Files
+# GakkoServices.AuthServer
 
-Two files named the following are required in this directory:
+## Required Files
+
+These files must exist in this directory:
+
 * secretappsettings.json
 * secretappsettings.Development.json
 
-The format of the file is as follows
-```
+The format of each file is as follows:
+
+```json
 {
   "dbUsername": "",
   "dbPassword": "",
@@ -25,8 +29,10 @@ The format of the file is as follows
 }
 ```
 
-Where `dbServerEngine` is any of the supported values in the Enum located in `Database.cs`. A snippet as of this committed version below
-```
+Where `dbServerEngine` is any of the supported values in the Enum located in
+`Database.cs`. As of this commit, the enum looks like this:
+
+```c#
 public enum SupportedDatabaseServerEngines
 {
     None = 0,
@@ -34,3 +40,6 @@ public enum SupportedDatabaseServerEngines
     Postgresql = 2
 }
 ```
+
+## Docker
+

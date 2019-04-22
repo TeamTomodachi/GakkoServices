@@ -1,11 +1,17 @@
-# Required Files
+# GakkoServices.Microservices.ExampleTemplateService
 
-Two files named the following are required in this directory:
+This is a template for creating new microservices.
+
+## Required Files
+
+The following files must exist in this directory:
+
 * secretappsettings.json
 * secretappsettings.Development.json
 
 The format of the file is as follows
-```
+
+```json
 {
   "dbUsername": "",
   "dbPassword": "",
@@ -14,8 +20,10 @@ The format of the file is as follows
 }
 ```
 
-Where `dbServerEngine` is any of the supported values in the Enum located in `Database.cs`. A snippet as of this committed version below
-```
+Where `dbServerEngine` is any of the supported values in the Enum located in
+`Database.cs`. A snippet as of this committed version below:
+
+```c#
 public enum SupportedDatabaseServerEngines
 {
     None = 0,
@@ -24,12 +32,13 @@ public enum SupportedDatabaseServerEngines
 }
 ```
 
-# How to use Template
+## How to use Template
+
 1. Clone Folder and Rename with proper Service Name
-2. Rename the .csproj to match FolderName format
-3. Change Namespace in Project Properties to match Folder Name
-4. Ctrl+f and change all existing namespaces in project to match new Namespace Structure
-5. Rename the DbContext to match Service Name 
-6. Go into the `GenerateMigrations.ps1` script and update the `$applicationDbPath` Context with the new Namespace and ContextName
-7. Go into `GenerateAllMigrations.ps1` script and add new Migration to `$migrationScriptPaths` 
-7. Add to Solution under "Microservices" Solution Folder
+1. Rename the .csproj to match FolderName format
+1. Change Namespace in Project Properties to match Folder Name
+1. Ctrl+f and change all existing namespaces in project to match new Namespace Structure
+1. Rename the DbContext to match Service Name 
+1. Go into the `GenerateMigrations.ps1` script and update the `$applicationDbPath` Context with the new Namespace and ContextName
+1. Go into `GenerateAllMigrations.ps1` script and add new Migration to `$migrationScriptPaths` 
+1. Add to Solution under "Microservices" Solution Folder

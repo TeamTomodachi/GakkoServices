@@ -2,6 +2,15 @@
 
 This service handles static data e.g. teams, pokemon, badges.
 
+## Docker
+
+The MetadataService is inaccessible from the internet. Requests for data must go
+through the message queue. This means that it has no access to traefik via the
+`traefik` network, but is on the `internal` network, which also has RabbitMQ. It
+also has access to the MetadataServiceDB container.
+
+# Configuration
+
 ## Required Files
 
 The following files must exist in this directory:
@@ -31,10 +40,3 @@ public enum SupportedDatabaseServerEngines
     Postgresql = 2
 }
 ```
-
-## Docker
-
-The MetadataService is inaccessible from the internet. Requests for data must go
-through the message queue. This means that it has no access to traefik via the
-`traefik` network, but is on the `internal` network, which also has RabbitMQ. It
-also has access to the MetadataServiceDB container.

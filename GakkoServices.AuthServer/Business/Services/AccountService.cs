@@ -66,6 +66,7 @@ namespace GakkoServices.AuthServer.Business.Services
             _scopeFactory = scopeFactory;
         }
 
+        /// Log in a user that already has an account
         public async Task<UserLoginArgs> LoginUser(UserLogin item)
         {
             UsernameLoginMode usernameLoginMode = UsernameLoginMode.Username;
@@ -97,6 +98,7 @@ namespace GakkoServices.AuthServer.Business.Services
             return new UserLoginArgs(result, loggedInUser, token);
         }
 
+        /// Create a new user with the given data, and optionally sign them in at the same time
         public async Task<RegisterNewUserArgs> RegisterNewUser(UserCreate item, bool signInUser)
         {
             // Create the User
@@ -131,6 +133,7 @@ namespace GakkoServices.AuthServer.Business.Services
             return new RegisterNewUserArgs(result, newUser, token);
         }
         
+        /// Log out a user by their auth token
         public async Task LogoutUserByAuthToken(string authToken, ClaimsPrincipal claimsPrincipalUser) {
             var token = await RetrieveAuthToken(authToken);
             if (token == null) return;

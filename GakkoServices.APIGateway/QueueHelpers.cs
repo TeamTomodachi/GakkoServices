@@ -11,6 +11,7 @@ namespace GakkoServices.APIGateway
 {
     public class QueueHelpers
     {
+        // IBusClient is the client for the message queue (RawRabbit)
         private IBusClient _queue;
 
         public QueueHelpers(IBusClient queue)
@@ -18,12 +19,14 @@ namespace GakkoServices.APIGateway
             _queue = queue;
         }
 
+        // Get a profile from the graphql context (which must contain the token)
         public async Task<Profile> GetProfileFromContext(ResolveFieldContext<object> context)
         {
             Guid userId = (await AuthenticateFromContext(context)).UserId;
             return await GetProfileFromAccountId(userId);
         }
 
+        // Get a profile from a UserID
         public async Task<Profile> GetProfileFromAccountId(Guid id)
         {
             var profileData = (await _queue.RequestAsync<ProfileRequestMessage, ResultMessage>(
@@ -51,11 +54,13 @@ namespace GakkoServices.APIGateway
             return p;
         }
 
+        // Authenticate a token that's in the graphql context
         public Task<AuthenticationData> AuthenticateFromContext(ResolveFieldContext<object> context)
         {
             return AuthenticateToken(((dynamic) context.UserContext).token);
         }
 
+        // Authenticate a token with the AuthServer
         public async Task<AuthenticationData> AuthenticateToken(string token)
         {
             var result = await _queue.RequestAsync<AuthenticationRequestMessage, ResultMessage>(

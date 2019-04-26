@@ -16,6 +16,7 @@ using GakkoServices.AuthServer.Business.Services;
 
 namespace GakkoServices.AuthServer.BackgroundServices
 {
+    /// This service listens for message on the message queue and responds to them
     public class MessageHandlerService: BackgroundService
     {
         private IServiceScopeFactory _scopeFactory;
@@ -29,12 +30,14 @@ namespace GakkoServices.AuthServer.BackgroundServices
             _logger = loggerFactory?.CreateLogger<MessageHandlerService>();
         }
 
+        /// Start listening for messages
         protected override Task ExecuteAsync(System.Threading.CancellationToken stoppingToken)
         {
             _queue.RespondAsync<AuthenticationRequestMessage, ResultMessage>(VerifyToken);
             return Task.CompletedTask;
         }
 
+        /// Verify the token in the message and return some data about it
         private async Task<ResultMessage> VerifyToken(AuthenticationRequestMessage message, MessageContext context)
         {
             using (var scope = _scopeFactory.CreateScope())

@@ -1,21 +1,33 @@
-# build the application
+# build the application in a separate container
 FROM microsoft/dotnet:sdk as build-env
+
+# The dockerfile takes a name and build environment as argument
 ARG name
 ARG BUILD_ENVIRONMENT=Debug
 
+# Use the directory /app to build
 WORKDIR /app
 
+# copy the entire GakkoServices folder in (which allows direct package
+# references to Core)
 COPY . .
+# Change directory into the package denoted by the `name` argument and build
 RUN cd "${name}" && dotnet publish -c $BUILD_ENVIRONMENT -o out
 
-# runtime container with built application
+# Run the application in a container with just the runtime (much smaller)
 FROM microsoft/dotnet:aspnetcore-runtime
+
+# Use the same name argument as before
 ARG name
 
+# do everything in the /app directory
 WORKDIR /app
 
+# Copy the output folder of the package denoted by `name` from the build container
 COPY --from=build-env /app/${name}/out ./
 
-# can't use arg in ENTRYPOINT, so give a static name
+# Rename the dll to something static since we can't use an arg in ENTRYPOINT
 RUN ln -s ./$name.dll entrypoint.dll
+
+# this command will be run when the container is started
 ENTRYPOINT ["dotnet", "entrypoint.dll"]

@@ -1,11 +1,17 @@
-# Required Files
+# GakkoServices.Microservices.MetadataService
 
-Two files named the following are required in this directory:
+This service handles static data e.g. teams, pokemon, badges.
+
+## Required Files
+
+The following files must exist in this directory:
+
 * secretappsettings.json
 * secretappsettings.Development.json
 
-The format of the file is as follows
-```
+The format of the file is as follows:
+
+```json
 {
   "dbUsername": "",
   "dbPassword": "",
@@ -14,8 +20,10 @@ The format of the file is as follows
 }
 ```
 
-Where `dbServerEngine` is any of the supported values in the Enum located in `Database.cs`. A snippet as of this committed version below
-```
+Where `dbServerEngine` is any of the supported values in the Enum located in
+`Database.cs`. A snippet as of this committed version below:
+
+```c#
 public enum SupportedDatabaseServerEngines
 {
     None = 0,
@@ -23,3 +31,10 @@ public enum SupportedDatabaseServerEngines
     Postgresql = 2
 }
 ```
+
+## Docker
+
+The MetadataService is inaccessible from the internet. Requests for data must go
+through the message queue. This means that it has no access to traefik via the
+`traefik` network, but is on the `internal` network, which also has RabbitMQ. It
+also has access to the MetadataServiceDB container.

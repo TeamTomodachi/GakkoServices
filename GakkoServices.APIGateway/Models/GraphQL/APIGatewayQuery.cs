@@ -11,19 +11,27 @@ using System.Linq;
 
 namespace GakkoServices.APIGateway.Models.GraphQL
 {
+    /// This class defines the fields that can be queried using the API
     public class APIGatewayQuery : ObjectGraphType
     {
         public APIGatewayQuery(IBusClient queue, QueueHelpers helpers)
         {
+            // The 'me' field allows the client to get the details of the
+            // current profile based on the token.
             FieldAsync<ProfileType>(
                 "me",
                 resolve: async context =>
                 {
+                    // Authenticate the user with their token
                     var userId = (await helpers.AuthenticateFromContext(context)).UserId;
+                    // Get the profile object based on the UserId we got from
+                    // the token
                     var thing = await helpers.GetProfileFromAccountId(userId);
                     return thing;
                 }
             );
+
+            // Allow the client to query any profile by its ID, UserID, or username
             FieldAsync<ProfileType>(
                 "profile",
                 arguments: new QueryArguments(
@@ -33,6 +41,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 ),
                 resolve: async context => {
                     ProfileRequestMessage message;
+                    // Depending on which argument we got, get the Profile
                     if (context.HasArgument("id"))
                     {
                         message = new ProfileRequestMessage {
@@ -55,6 +64,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                     
                     var responseTask = await queue.RequestAsync<ProfileRequestMessage, ResultMessage>(message);
                     var profileData = responseTask.data as ProfileData;
+                    // map the ProfileData object to a Profile object
                     Profile p = new Profile();
                     p.Id = profileData.Id;
                     p.Username = profileData.Username;
@@ -70,6 +80,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
+            // Get a pokemon by id, name or pokedex number
             FieldAsync<PokemonType>(
                 "pokemon",
                 arguments: new QueryArguments(
@@ -79,6 +90,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 ),
                 resolve: async context => {
                     PokemonRequestMessage message;
+                    // make the request message based on the argument we got
                     if (context.HasArgument("id"))
                     {
                         message = new PokemonRequestMessage {
@@ -112,6 +124,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
+            // get a team by ID
             FieldAsync<TeamType>(
                 "team",
                 arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
@@ -131,6 +144,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
+            // Get a badge by ID
             FieldAsync<BadgeType>(
                 "badge",
                 arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
@@ -150,6 +164,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
             );
 
 
+            // Get a pokemonType by ID
             FieldAsync<PokemonTypeType>(
                 "pokemonType",
                 arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }),
@@ -167,6 +182,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
+            // Get all badges
             FieldAsync<ListGraphType<BadgeType>>(
                 "badges",
                 resolve: async context => {
@@ -186,6 +202,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
+            // get all teams
             FieldAsync<ListGraphType<TeamType>>(
                 "teams",
                 resolve: async context => {
@@ -206,6 +223,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
+            // get all pokemon (pluralized to pokemen)
             FieldAsync<ListGraphType<PokemonType>>(
                 "pokemen",
                 resolve: async context => {
@@ -227,6 +245,7 @@ namespace GakkoServices.APIGateway.Models.GraphQL
                 }
             );
 
+            // Get all pokemon types
             FieldAsync<ListGraphType<PokemonTypeType>>(
                 "pokemonTypes",
                 resolve: async context => {

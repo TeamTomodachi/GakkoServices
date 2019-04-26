@@ -4,6 +4,8 @@ using GraphQL;
 
 namespace GakkoServices.APIGateway
 {
+    // This class adds the graphql types to the DI framework as singletons
+    // When adding a new GraphQL Type, it must also be added here
     public static class GraphQLConfiguration
     {
         public static void Configure(IServiceCollection services)

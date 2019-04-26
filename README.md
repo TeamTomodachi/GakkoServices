@@ -43,7 +43,20 @@ To pull the GakkoFront Submodule, run the following Git Command
 > `cd GakkoFront`
 > `git submodule update --recursive --remote`
 
-### Starting up Docker
+### Docker
+
+#### Installing Docker
+
+GakkoServices supports both Legacy and Modern Docker installations. On Windows, this means:
+
+- Windows 10 Home Edition: Docker Toolbox (Legacy)
+- Windows 10 Professional/Enterprise Installations: Docker For Windows
+
+Installation guide for Docker can be found here:
+
+> https://docs.docker.com/docker-for-windows/install/
+
+#### Starting up Docker
 
 From the root GakkoServices directory, run the following commands depending on your scenario
 

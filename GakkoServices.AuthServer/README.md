@@ -19,6 +19,13 @@ The Auth Server also has an IdentityServer4 OAuth Endpoint setup here
 * `/auth/account`
 * `/auth/.well-known/openid-configuration`
 
+## Docker
+
+The AuthServer is exposed to the internet at `/auth`. It exists next to the
+APIGateway. The client accesses it separately from the APIGateway when logging
+in, verifying a token, or signing up.
+
+# Configuration
 ## Required Files
 
 These files must exist in this directory:
@@ -59,9 +66,3 @@ public enum SupportedDatabaseServerEngines
     Postgresql = 2
 }
 ```
-
-## Docker
-
-The AuthServer is exposed to the internet at `/auth`. It exists next to the
-APIGateway. The client accesses it separately from the APIGateway when logging
-in, verifying a token, or signing up.

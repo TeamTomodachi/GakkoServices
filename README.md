@@ -2,22 +2,10 @@
 
 ## Routing
 
-The Base URL of the API Gateway is `/auth`
+The Base URL of the Auth Server is `/auth`.
+The Base URL of the API Gateway is `/api-gateway`
 
-The API Gateway has a single graphical interpreter endpoints
-
-* `/auth/swagger`
-
-And a couple API Controllers
-
-* `/auth/api/Authentication`
-* `/auth/api/AuthToken`
-* `/auth/api/UserAccount`
-
-The Auth Server also has an IdentityServer4 OAuth Endpoint setup here
-
-* `/auth/account`
-* `/auth/.well-known/openid-configuration`
+See the `README.md` files in the respective Services for additional information on routing
 
 ## Configuration
 

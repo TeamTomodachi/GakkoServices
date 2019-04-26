@@ -1,5 +1,24 @@
 # GakkoServices.AuthServer
 
+## Routing
+
+The Base URL of the Auth Server is `/auth`.
+
+The Auth Server has a single graphical interpreter endpoints
+
+* `/auth/swagger`
+
+And a couple API Controllers
+
+* `/auth/api/Authentication`
+* `/auth/api/AuthToken`
+* `/auth/api/UserAccount`
+
+The Auth Server also has an IdentityServer4 OAuth Endpoint setup here
+
+* `/auth/account`
+* `/auth/.well-known/openid-configuration`
+
 ## Required Files
 
 These files must exist in this directory:
